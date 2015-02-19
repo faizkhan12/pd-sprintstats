@@ -90,6 +90,13 @@ def print_stats(title, stats):
     for k, v in stats.iteritems():
         print k.ljust(20) + ':' + str(v)
 
+def find_board_id(board_name, greenhopper):
+    boards = greenhopper.boards()
+    for board in boards:
+        if board.name == board_name:
+            return board.id
+    return None
+
 def main():
     config = parse_config()
     args = parse_arguments()
@@ -125,6 +132,11 @@ def main():
         for board in boards:
             print '%s : %s' % (str(board.id).ljust(5), board.name)
     else:
+        if not args.board.isdigit():
+            args.board = find_board_id(args.board, greenhopper)
+            if not args.board:
+                print "Board not found"
+                return 1
         sprints = greenhopper.sprints(args.board)
         for sprint in sprints:
             if sprint.name == args.sprint:
