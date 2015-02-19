@@ -147,7 +147,7 @@ def main():
                 print_issues('Incomplete Issues', incompleted_issues)
                 stats = gather_stats(completed_issues, jira=jra)
                 sys.stdout.write('\n')
-                print_stats("Cycle Time Statistics", stats)
+                print_stats("Sprint Statistics", stats)
     return 0
 
 if __name__ == '__main__':
