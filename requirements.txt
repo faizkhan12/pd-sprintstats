@@ -1,6 +1,9 @@
+gnureadline==6.3.3
+ipython==2.4.1
 jira==0.39
 oauthlib==0.7.2
 ordereddict==1.1
+python-dateutil==2.4.0
 requests==2.5.1
 requests-oauthlib==0.4.2
 requests-toolbelt==0.3.1

@@ -3,9 +3,11 @@ from jira.client import JIRA
 from jira.client import GreenHopper
 from jira import JIRAError
 from ConfigParser import SafeConfigParser
+import dateutil.parser
 import argparse
 import getpass
 import sys
+import numpy
 
 def parse_config():
     parser = SafeConfigParser()
@@ -33,18 +35,45 @@ def find_custom_field(field_name, jira):
         if field_name in f['clauseNames']:
             return f
 
-def gather_stats(issues, jira):
-    stats = {}
+def calculate_velocity(issues, jira):
     velocity = 0
     story_point_field = find_custom_field('Story Points', jira)
     if not story_point_field:
         raise Exception('Could not find the story points custom field for this jira instance')
 
     for issue in issues:
+        sys.stdout.write('.'); sys.stdout.flush()
         if issue.typeName != 'SubTask':
             iss = jira.issue(issue.key)
             velocity += getattr(iss.fields, story_point_field['id'])
+    return velocity
+
+def calculate_cycle_times(issues, jira):
+    times = []
+    for issue in issues:
+        sys.stdout.write('.'); sys.stdout.flush()
+        if issue.typeName != 'SubTask':
+            iss = jira.issue(issue.key)
+            open_time = dateutil.parser.parse(iss.fields.created)
+            close_time = dateutil.parser.parse(iss.fields.resolutiondate)
+            cycle_time = (close_time - open_time).days
+            times.append(cycle_time)
+    arr = numpy.array(times)
+    average_cycle = numpy.mean(arr)
+    std_deviation = numpy.std(arr)
+    ret = {
+        'min_cycle_time' : min(times),
+        'max_cycle_time' : max(times),
+        'average_cycle_time' : average_cycle,
+        'cycle_time_stddev' : std_deviation
+    }
+    return ret
+
+def gather_stats(issues, jira):
+    stats = {}
+    velocity = calculate_velocity(issues, jira)
     stats['velocity'] = velocity
+    stats.update(calculate_cycle_times(issues, jira))
     return stats
 
 def print_issues(title, issues):
@@ -54,6 +83,11 @@ def print_issues(title, issues):
         if not issue.typeName == 'SubTask':
             print issue.key.ljust(10) + issue.summary
 
+def print_stats(title, stats):
+    print title
+    print '=' * len(title)
+    for k, v in stats.iteritems():
+        print k.ljust(20) + ':' + str(v)
 
 def main():
     config = parse_config()
@@ -96,9 +130,11 @@ def main():
                 completed_issues = greenhopper.completed_issues(args.board, sprint.id)
                 print_issues('Completed Issues', completed_issues)
                 incompleted_issues = greenhopper.incompleted_issues(args.board, sprint.id)
+                sys.stdout.write('\n')
                 print_issues('Incomplete Issues', incompleted_issues)
                 stats = gather_stats(completed_issues, jira=jra)
-                print stats
+                sys.stdout.write('\n')
+                print_stats("Cycle Time Statistics", stats)
     return 0
 
 if __name__ == '__main__':
