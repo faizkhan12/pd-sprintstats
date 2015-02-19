@@ -10,11 +10,12 @@ import sys
 import numpy
 
 def parse_config():
+    settings = {}
     parser = SafeConfigParser()
     parser.read('config.cfg')
     if parser.has_section('default'):
        settings = dict(parser.items('default'))
-    return settings or {}
+    return settings
 
 def parse_arguments():
     parser = argparse.ArgumentParser(description='Gather some statistics about a JIRA sprint')
