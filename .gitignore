@@ -5,3 +5,4 @@ env/*
 *.pyc
 config.cfg
 *.swp
+.DS_Store
