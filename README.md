@@ -22,11 +22,11 @@ For now, the easiest way to install this is to clone the repo and run the script
 
 The script should now be ready to run. Try it out.
 
-    (env)pd-sprintstats $./sprintstats.py -h`
+    (env)pd-sprintstats $./sprintstats -h`
 
-    usage: sprintstats.py [-h] [--user USER] [--password PASSWORD] [-P]
-                          [--list-boards] [--server SERVER] [--board [BOARD]]
-                          [--sprint [SPRINT]]
+    usage: sprintstats [-h] [--user USER] [--password PASSWORD] [-P]
+                       [--list-boards] [--server SERVER] [--board [BOARD]]
+                       [--sprint [SPRINT]]
 
     Gather some statistics about a JIRA sprint
 
@@ -69,7 +69,7 @@ Once you've got your credentials set up, you can process some stats!
 
 *Note*: You need to know either the name or the id of your JIRA Rapidboard where you're tracking your sprints. If you prefer the succintness of an id you can use the `--list-boards` command line option to find the ID of your board and specify that.
 
-    (env)pd-sprintstats $./sprintstats.py -b "WorkFlow Scrum Board" -t "Sprint 1"
+    (env)pd-sprintstats $./sprintstats -b "WorkFlow Scrum Board" -t "Sprint 1"
 
     Completed Issues
     ================
