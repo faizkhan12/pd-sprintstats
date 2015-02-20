@@ -8,13 +8,34 @@ import argparse
 import getpass
 import sys
 import numpy
+import os
 
-def parse_config():
+def parse_config(args):
     settings = {}
     parser = SafeConfigParser()
-    parser.read('config.cfg')
-    if parser.has_section('default'):
-       settings = dict(parser.items('default'))
+    config_precedence = [
+        '/etc/sprintstats.cfg',
+        '/usr/local/etc/sprintstats.cfg',
+        '~/.sprintstats.cfg',
+        'config.cfg'
+    ]
+    config_file = None
+    for f in config_precedence:
+        if os.path.exists(f):
+            config_file = f
+
+    if args.config:
+        if os.path.exists(args.config):
+            config_file = args.config
+        else:
+            print 'WARNING: Specified config file %s not found' % (os.path.abspath(args.config))
+            if config_file and os.path.exists(config_file):
+                print 'Using %s instead.' % (os.path.abspath(config_file))
+
+    if config_file and os.path.exists(config_file):
+        parser.read('config.cfg')
+        if parser.has_section('default'):
+           settings = dict(parser.items('default'))
     return settings
 
 def parse_arguments():
@@ -26,7 +47,7 @@ def parse_arguments():
     parser.add_argument('--server', '-s', metavar='SERVER')
     parser.add_argument('--board', '-b', nargs='?', help='The id of the rapidboard that houses the sprint on which you want to gather stats. (Use --list-boards to find it')
     parser.add_argument('--sprint', '-t',  nargs='?', help='The name of the sprint on which to produce the stats')
-
+    parser.add_argument('--config', '-c', help='The path to a config file containing jira server and/or credentials (See README.md)')
     args = parser.parse_args()
     return args
 
@@ -98,8 +119,8 @@ def find_board_id(board_name, greenhopper):
     return None
 
 def main():
-    config = parse_config()
     args = parse_arguments()
+    config = parse_config(args)
 
     if args.list_boards and (args.board or args.sprint):
         print '--list-boards cannot be used in conjunction with a board and sprint id. Use one or the other.'
@@ -108,8 +129,8 @@ def main():
         print 'Either --list-boards or a board and sprint must be specified'
         return 1
 
-    user = args.user or config['user'] or getpass.getuser()
-    password = args.password or config['password'] or (args.prompt and getpass.getpass())
+    user = args.user or ('user' in config and config['user']) or getpass.getuser()
+    password = args.password or ('password' in config and config['password']) or (args.prompt and getpass.getpass())
 
     if not user or not password:
         print 'Username and password are required'
@@ -135,7 +156,7 @@ def main():
         if not args.board.isdigit():
             args.board = find_board_id(args.board, greenhopper)
             if not args.board:
-                print "Board not found"
+                print 'Board not found'
                 return 1
         sprints = greenhopper.sprints(args.board)
         for sprint in sprints:
@@ -147,7 +168,7 @@ def main():
                 print_issues('Incomplete Issues', incompleted_issues)
                 stats = gather_stats(completed_issues, jira=jra)
                 sys.stdout.write('\n')
-                print_stats("Sprint Statistics", stats)
+                print_stats('Sprint Statistics', stats)
     return 0
 
 if __name__ == '__main__':
