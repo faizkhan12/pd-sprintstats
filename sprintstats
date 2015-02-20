@@ -81,11 +81,12 @@ def calculate_cycle_times(issues, jira):
             cycle_time = (close_time - open_time).days
             times.append(cycle_time)
     arr = numpy.array(times)
-    average_cycle = numpy.mean(arr)
-    std_deviation = numpy.std(arr)
+    average_cycle = numpy.mean(arr) if len(arr) else -1
+    std_deviation = numpy.std(arr) if len(arr) else -1
+
     ret = {
-        'min_cycle_time' : min(times),
-        'max_cycle_time' : max(times),
+        'min_cycle_time' : min(times) if len(times) else -1,
+        'max_cycle_time' : max(times) if len(times) else -1,
         'average_cycle_time' : average_cycle,
         'cycle_time_stddev' : std_deviation
     }
