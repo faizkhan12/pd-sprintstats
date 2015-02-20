@@ -2,6 +2,11 @@
 This is a python script you can run after a completed sprint to gather some statistics about that sprint from JIRA.
 
 ## Usage
+### Installation
+Currently you can install this directly with pip.
+`sudo -H  pip install pd-sprintstats --extra-index-url https://pypi.fury.io/iEnm28XnW1db41izC3Kc/jdiller/`
+
+
 ### Prerequisites
 To use the script, you need a few things.
 * The url for a valid JIRA instance (e.g. https://pagerduty.atlassian.net)
@@ -51,7 +56,7 @@ Once you've got your credentials set up, you can process some stats!
     max_cycle_time      :38
 
 
-##Development
+##Development - Python
 The script is written in python 2.7 and has a number of dependencies. For ease, it's recommended you use a virtual environment
 for development purposes.
 
@@ -63,7 +68,7 @@ Run the following commands in a terminal to get them set up.
 
 Once those are installed, and you've cloned this repository you're all set.
 
-    $ cd /path/to/pd-sprintstats
+    $ cd /path/to/pd-sprintstats/python
     $ virtualenv env
     New python executable in env/bin/python
     Installing setuptools, pip...done.
