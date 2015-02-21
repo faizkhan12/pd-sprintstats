@@ -71,6 +71,7 @@ def find_custom_field(field_name, jira):
         if field_name in f['clauseNames']:
             return f
 
+
 def dot():
     sys.stderr.write('.')
     sys.stderr.flush()
@@ -138,7 +139,7 @@ def output_issues(title, issues, as_json=False):
 def output_stats(title, stats, as_json=False):
     if as_json:
         key = title.lower().replace(' ', '_')
-        print json.dumps({key : stats}, sort_keys=True,
+        print json.dumps({key: stats}, sort_keys=True,
                          indent=4, separators=(',', ': '))
     else:
         print title
