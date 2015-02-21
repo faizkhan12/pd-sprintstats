@@ -10,6 +10,7 @@ import sys
 import numpy
 import os
 
+
 def parse_config(args):
     settings = {}
     parser = SafeConfigParser()
@@ -35,21 +36,31 @@ def parse_config(args):
     if config_file and os.path.exists(config_file):
         parser.read('config.cfg')
         if parser.has_section('default'):
-           settings = dict(parser.items('default'))
+            settings = dict(parser.items('default'))
     return settings
 
+
 def parse_arguments():
-    parser = argparse.ArgumentParser(description='Gather some statistics about a JIRA sprint')
-    parser.add_argument('--user', '-u', metavar='USER',  help='The JIRA user name to used for auth. If omitted the current user name will be used.')
-    parser.add_argument('--password','-p', metavar='PASSWORD',  help='The JIRA password to be used for auth. If omitted you will be prompted.')
-    parser.add_argument('-P', action='store_true', dest='prompt', help='Prompt for password.')
-    parser.add_argument('--list-boards', '-l',  action='store_true', help='When supplied, a list of RapidBoards and their associated IDs are displayed')
+    parser = argparse.ArgumentParser(
+        description='Gather some statistics about a JIRA sprint')
+    parser.add_argument('--user', '-u', metavar='USER',
+                        help='The JIRA user name to used for auth. If omitted the current user name will be used.')
+    parser.add_argument('--password', '-p', metavar='PASSWORD',
+                        help='The JIRA password to be used for auth. If omitted you will be prompted.')
+    parser.add_argument(
+        '-P', action='store_true', dest='prompt', help='Prompt for password.')
+    parser.add_argument('--list-boards', '-l',  action='store_true',
+                        help='When supplied, a list of RapidBoards and their associated IDs are displayed')
     parser.add_argument('--server', '-s', metavar='SERVER')
-    parser.add_argument('--board', '-b', nargs='?', help='The id of the rapidboard that houses the sprint on which you want to gather stats. (Use --list-boards to find it')
-    parser.add_argument('--sprint', '-t',  nargs='?', help='The name of the sprint on which to produce the stats')
-    parser.add_argument('--config', '-c', help='The path to a config file containing jira server and/or credentials (See README.md)')
+    parser.add_argument('--board', '-b', nargs='?',
+                        help='The id of the rapidboard that houses the sprint on which you want to gather stats. (Use --list-boards to find it')
+    parser.add_argument('--sprint', '-t',  nargs='?',
+                        help='The name of the sprint on which to produce the stats')
+    parser.add_argument(
+        '--config', '-c', help='The path to a config file containing jira server and/or credentials (See README.md)')
     args = parser.parse_args()
     return args
+
 
 def find_custom_field(field_name, jira):
     fields = jira.fields()
@@ -57,23 +68,28 @@ def find_custom_field(field_name, jira):
         if field_name in f['clauseNames']:
             return f
 
+
 def calculate_velocity(issues, jira):
     velocity = 0
     story_point_field = find_custom_field('Story Points', jira)
     if not story_point_field:
-        raise Exception('Could not find the story points custom field for this jira instance')
+        raise Exception(
+            'Could not find the story points custom field for this jira instance')
 
     for issue in issues:
-        sys.stdout.write('.'); sys.stdout.flush()
+        sys.stdout.write('.')
+        sys.stdout.flush()
         if issue.typeName != 'SubTask':
             iss = jira.issue(issue.key)
             velocity += getattr(iss.fields, story_point_field['id'])
     return velocity
 
+
 def calculate_cycle_times(issues, jira):
     times = []
     for issue in issues:
-        sys.stdout.write('.'); sys.stdout.flush()
+        sys.stdout.write('.')
+        sys.stdout.flush()
         if issue.typeName != 'SubTask':
             iss = jira.issue(issue.key)
             open_time = dateutil.parser.parse(iss.fields.created)
@@ -85,12 +101,13 @@ def calculate_cycle_times(issues, jira):
     std_deviation = numpy.std(arr) if len(arr) else -1
 
     ret = {
-        'min_cycle_time' : min(times) if len(times) else -1,
-        'max_cycle_time' : max(times) if len(times) else -1,
-        'average_cycle_time' : average_cycle,
-        'cycle_time_stddev' : std_deviation
+        'min_cycle_time': min(times) if len(times) else -1,
+        'max_cycle_time': max(times) if len(times) else -1,
+        'average_cycle_time': average_cycle,
+        'cycle_time_stddev': std_deviation
     }
     return ret
+
 
 def gather_stats(issues, jira):
     stats = {}
@@ -99,6 +116,7 @@ def gather_stats(issues, jira):
     stats.update(calculate_cycle_times(issues, jira))
     return stats
 
+
 def print_issues(title, issues):
     print title
     print '=' * len(title)
@@ -106,11 +124,13 @@ def print_issues(title, issues):
         if not issue.typeName == 'SubTask':
             print issue.key.ljust(10) + issue.summary
 
+
 def print_stats(title, stats):
     print title
     print '=' * len(title)
     for k, v in stats.iteritems():
         print k.ljust(20) + ':' + str(v)
+
 
 def find_board_id(board_name, greenhopper):
     boards = greenhopper.boards()
@@ -118,6 +138,7 @@ def find_board_id(board_name, greenhopper):
         if board.name == board_name:
             return board.id
     return None
+
 
 def main():
     args = parse_arguments()
@@ -130,8 +151,10 @@ def main():
         print 'Either --list-boards or a board and sprint must be specified'
         return 1
 
-    user = args.user or ('user' in config and config['user']) or getpass.getuser()
-    password = args.password or ('password' in config and config['password']) or (args.prompt and getpass.getpass())
+    user = args.user or (
+        'user' in config and config['user']) or getpass.getuser()
+    password = args.password or ('password' in config and config['password']) or (
+        args.prompt and getpass.getpass())
 
     if not user or not password:
         print 'Username and password are required'
@@ -139,7 +162,7 @@ def main():
 
     auth = (user, password)
     options = {
-        'server' : args.server or config['server'] or 'https://jira.atlassian.com'
+        'server': args.server or config['server'] or 'https://jira.atlassian.com'
     }
 
     try:
@@ -162,9 +185,11 @@ def main():
         sprints = greenhopper.sprints(args.board)
         for sprint in sprints:
             if sprint.name == args.sprint:
-                completed_issues = greenhopper.completed_issues(args.board, sprint.id)
+                completed_issues = greenhopper.completed_issues(
+                    args.board, sprint.id)
                 print_issues('Completed Issues', completed_issues)
-                incompleted_issues = greenhopper.incompleted_issues(args.board, sprint.id)
+                incompleted_issues = greenhopper.incompleted_issues(
+                    args.board, sprint.id)
                 sys.stdout.write('\n')
                 print_issues('Incomplete Issues', incompleted_issues)
                 stats = gather_stats(completed_issues, jira=jra)
@@ -173,5 +198,4 @@ def main():
     return 0
 
 if __name__ == '__main__':
-   sys.exit(main())
-
+    sys.exit(main())
