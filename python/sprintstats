@@ -9,6 +9,7 @@ import getpass
 import sys
 import numpy
 import os
+import json
 
 
 def parse_config(args):
@@ -58,6 +59,8 @@ def parse_arguments():
                         help='The name of the sprint on which to produce the stats')
     parser.add_argument(
         '--config', '-c', help='The path to a config file containing jira server and/or credentials (See README.md)')
+    parser.add_argument(
+        '--json', '-j', action="store_true", help='Produce output in JSON format')
     args = parser.parse_args()
     return args
 
@@ -117,19 +120,33 @@ def gather_stats(issues, jira):
     return stats
 
 
-def print_issues(title, issues):
-    print title
-    print '=' * len(title)
-    for issue in issues:
-        if not issue.typeName == 'SubTask':
-            print issue.key.ljust(10) + issue.summary
+def output_issues(title, issues, as_json=False):
+    if as_json:
+        issue_dict = {}
+        t = title.lower().replace(' ', '_')
+        issue_dict[t] = []
+        for issue in issues:
+            if not issue.typeName == 'SubTask':
+                issue_dict[t].append({issue.key: issue.summary})
+        print json.dumps(issue_dict, sort_keys=True,
+                         indent=4, separators=(',', ': '))
+    else:
+        print title
+        print '=' * len(title)
+        for issue in issues:
+            if not issue.typeName == 'SubTask':
+                print issue.key.ljust(10) + issue.summary
 
 
-def print_stats(title, stats):
-    print title
-    print '=' * len(title)
-    for k, v in stats.iteritems():
-        print k.ljust(20) + ':' + str(v)
+def output_stats(title, stats, as_json=False):
+    if as_json:
+        print json.dumps(stats, sort_keys=True,
+                         indent=4, separators=(',', ': '))
+    else:
+        print title
+        print '=' * len(title)
+        for k, v in stats.iteritems():
+            print k.ljust(20) + ':' + str(v)
 
 
 def find_board_id(board_name, greenhopper):
@@ -187,14 +204,16 @@ def main():
             if sprint.name == args.sprint:
                 completed_issues = greenhopper.completed_issues(
                     args.board, sprint.id)
-                print_issues('Completed Issues', completed_issues)
+                output_issues(
+                    'Completed Issues', completed_issues, as_json=args.json)
                 incompleted_issues = greenhopper.incompleted_issues(
                     args.board, sprint.id)
                 sys.stdout.write('\n')
-                print_issues('Incomplete Issues', incompleted_issues)
+                output_issues(
+                    'Incomplete Issues', incompleted_issues, as_json=args.json)
                 stats = gather_stats(completed_issues, jira=jra)
                 sys.stdout.write('\n')
-                print_stats('Sprint Statistics', stats)
+                output_stats('Sprint Statistics', stats, as_json=args.json)
     return 0
 
 if __name__ == '__main__':
