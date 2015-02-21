@@ -71,6 +71,10 @@ def find_custom_field(field_name, jira):
         if field_name in f['clauseNames']:
             return f
 
+def dot():
+    sys.stderr.write('.')
+    sys.stderr.flush()
+
 
 def calculate_velocity(issues, jira):
     velocity = 0
@@ -79,26 +83,21 @@ def calculate_velocity(issues, jira):
         raise Exception(
             'Could not find the story points custom field for this jira instance')
 
-    for issue in issues:
-        sys.stdout.write('.')
-        sys.stdout.flush()
-        if issue.typeName != 'SubTask':
-            iss = jira.issue(issue.key)
-            velocity += getattr(iss.fields, story_point_field['id'])
+    for issue in [i for i in issues if i.typeName != 'SubTask']:
+        iss = jira.issue(issue.key)
+        velocity += getattr(iss.fields, story_point_field['id'])
     return velocity
 
 
 def calculate_cycle_times(issues, jira):
     times = []
-    for issue in issues:
-        sys.stdout.write('.')
-        sys.stdout.flush()
-        if issue.typeName != 'SubTask':
-            iss = jira.issue(issue.key)
-            open_time = dateutil.parser.parse(iss.fields.created)
-            close_time = dateutil.parser.parse(iss.fields.resolutiondate)
-            cycle_time = (close_time - open_time).days
-            times.append(cycle_time)
+    for issue in [i for i in issues if i.typeName != 'SubTask']:
+        dot()
+        iss = jira.issue(issue.key)
+        open_time = dateutil.parser.parse(iss.fields.created)
+        close_time = dateutil.parser.parse(iss.fields.resolutiondate)
+        cycle_time = (close_time - open_time).days
+        times.append(cycle_time)
     arr = numpy.array(times)
     average_cycle = numpy.mean(arr) if len(arr) else -1
     std_deviation = numpy.std(arr) if len(arr) else -1
@@ -125,22 +124,21 @@ def output_issues(title, issues, as_json=False):
         issue_dict = {}
         t = title.lower().replace(' ', '_')
         issue_dict[t] = []
-        for issue in issues:
-            if not issue.typeName == 'SubTask':
-                issue_dict[t].append({issue.key: issue.summary})
+        for issue in [i for i in issues if i.typeName != 'SubTask']:
+            issue_dict[t].append({issue.key: issue.summary})
         print json.dumps(issue_dict, sort_keys=True,
                          indent=4, separators=(',', ': '))
     else:
         print title
         print '=' * len(title)
-        for issue in issues:
-            if not issue.typeName == 'SubTask':
-                print issue.key.ljust(10) + issue.summary
+        for issue in [i for i in issues if i.typeName != 'SubTask']:
+            print issue.key.ljust(10) + issue.summary
 
 
 def output_stats(title, stats, as_json=False):
     if as_json:
-        print json.dumps(stats, sort_keys=True,
+        key = title.lower().replace(' ', '_')
+        print json.dumps({key : stats}, sort_keys=True,
                          indent=4, separators=(',', ': '))
     else:
         print title
