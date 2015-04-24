@@ -1,0 +1,304 @@
+#!/usr/bin/env python
+
+#Copyright:: Copyright (c) 2015 PagerDuty, Inc.
+#License:: Apache License, Version 2.0
+#
+#Licensed under the Apache License, Version 2.0 (the "License");
+#you may not use this file except in compliance with the License.
+#You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+#Unless required by applicable law or agreed to in writing, software
+#distributed under the License is distributed on an "AS IS" BASIS,
+#WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#See the License for the specific language governing permissions and
+#limitations under the License.
+
+from __future__ import print_function
+from jira.client import JIRA
+from jira.client import GreenHopper
+from jira import JIRAError
+from ConfigParser import SafeConfigParser
+import dateutil.parser
+import datetime
+import argparse
+import getpass
+import sys
+import numpy
+import os
+import json
+
+
+def parse_config(args):
+    settings = {}
+    parser = SafeConfigParser()
+    config_precedence = [
+        '/etc/sprintstats.cfg',
+        '/usr/local/etc/sprintstats.cfg',
+        '~/.sprintstats.cfg',
+        'config.cfg'
+    ]
+    config_file = None
+    for f in config_precedence:
+        if os.path.exists(f):
+            config_file = f
+
+    if args.config:
+        if os.path.exists(args.config):
+            config_file = args.config
+        else:
+            print('WARNING: Specified config file %s not found' % (os.path.abspath(args.config)))
+            if config_file and os.path.exists(config_file):
+                print('Using %s instead.' % (os.path.abspath(config_file)))
+
+    if config_file and os.path.exists(config_file):
+        parser.read('config.cfg')
+        if parser.has_section('default'):
+            settings = dict(parser.items('default'))
+    if not 'default_points' in settings:
+        settings['default_points'] = 0
+    return settings
+
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(
+        description='Gather some statistics about a JIRA sprint')
+    parser.add_argument('--user', '-u', metavar='USER',
+                        help='The JIRA user name to used for auth. If omitted the current user name will be used.')
+    parser.add_argument('--password', '-p', metavar='PASSWORD',
+                        help='The JIRA password to be used for auth. If omitted you will be prompted.')
+    parser.add_argument(
+        '-P', action='store_true', dest='prompt', help='Prompt for password.')
+    parser.add_argument('--list-boards', '-l',  action='store_true',
+                        help='When supplied, a list of RapidBoards and their associated IDs are displayed')
+    parser.add_argument('--server', '-s', metavar='SERVER')
+
+    parser.add_argument('--board', '-b', nargs='?',
+                        help='The name or id of the rapidboard that houses the sprint for which you want to gather stats.')
+    parser.add_argument('--sprint', '-t',  nargs='?',
+                        help='The name of the sprint on which to produce the stats')
+    parser.add_argument('--project', '-r',
+                        help='The project for which to gather backlog stats')
+    parser.add_argument(
+        '--config', '-c', help='The path to a config file containing jira server and/or credentials (See README.md)')
+    parser.add_argument(
+        '--json', '-j', action='store_true', help='Produce output in JSON format')
+    args = parser.parse_args()
+    return args
+
+
+def find_custom_field(field_name, jira):
+    fields = jira.fields()
+    for f in fields:
+        if field_name in f['clauseNames']:
+            return f
+
+
+def dot():
+    if sys.stderr.isatty():
+        sys.stderr.write('.')
+        sys.stderr.flush()
+
+
+def sum_story_points(issues, jira, default_points=0):
+    points_sum = 0
+    story_point_field = find_custom_field('Story Points', jira)
+    if not story_point_field:
+        raise Exception(
+            'Could not find the story points custom field for this jira instance')
+
+    for issue in [i for i in issues if i.typeName != 'SubTask']:
+        iss = jira.issue(issue.key)
+        points_sum += (getattr(iss.fields, story_point_field['id']) or default_points)
+    return points_sum
+
+
+def calculate_cycle_times(issues, jira):
+    times = []
+    for issue in [i for i in issues if i.typeName != 'SubTask']:
+        dot()
+        iss = jira.issue(issue.key)
+        open_time = dateutil.parser.parse(iss.fields.created)
+        close_time = dateutil.parser.parse(iss.fields.resolutiondate)
+        cycle_time = (close_time - open_time).days
+        times.append(cycle_time)
+    arr = numpy.array(times)
+    average_cycle = numpy.mean(arr) if len(arr) else -1
+    std_deviation = numpy.std(arr) if len(arr) else -1
+
+    ret = {
+        'min_cycle_time': min(times) if len(times) else -1,
+        'max_cycle_time': max(times) if len(times) else -1,
+        'average_cycle_time': average_cycle,
+        'cycle_time_stddev': std_deviation
+    }
+    return ret
+
+
+def gather_sprint_stats(completed_issues, incompleted_issues, jira, default_points=0):
+    stats = {}
+    velocity = sum_story_points(completed_issues, jira, default_points=default_points)
+    stats['velocity'] = velocity
+    commitment = sum_story_points(completed_issues + incompleted_issues, jira, default_points=default_points)
+    stats['commitment'] = commitment
+    stats.update(calculate_cycle_times(completed_issues, jira))
+    return stats
+
+
+def gather_backlog_stats(project, jira, default_points=0):
+    incomplete_issues = jira.search_issues(
+        'project=%s AND status != Done and type != Sub-task and type != Epic' % project.key, maxResults=-1)
+    story_point_field = find_custom_field('Story Points', jira)
+    stories = [
+        i for i in incomplete_issues if i.fields.issuetype.name == 'Story']
+    points = [getattr(issue.fields, story_point_field['id'])
+              for issue in stories]
+    total_points = reduce(
+        lambda x, y: x + y, [p for p in points if p is not None] + [default_points for p in points if p is None])
+    ages = []
+    for issue in incomplete_issues:
+        dot()
+        iss = jira.issue(issue.key)
+        open_time = dateutil.parser.parse(iss.fields.created).replace(tzinfo=None)
+        age = (datetime.datetime.now() - open_time).days
+        ages.append(age)
+    arr = numpy.array(ages)
+    average_age = numpy.mean(arr) if len(arr) else -1
+    std_deviation = numpy.std(arr) if len(arr) else -1
+    ret = {
+        'incomplete_pbis': len(incomplete_issues),
+        'incomplete_stories': len(stories),
+        'points_in_backlog': total_points,
+        'min_pbi_age': min(ages),
+        'max_pbi_age': max(ages),
+        'avg_pbi_age': average_age,
+        'age_std_dev': std_deviation,
+    }
+
+    return ret
+
+
+def issues_as_list(issues):
+    issue_list = []
+    for issue in [i for i in issues if i.typeName != 'SubTask']:
+        issue_list.append({issue.key: issue.summary})
+    return issue_list
+
+
+def output_issues(title, issues):
+    print (title)
+    print ('=' * len(title))
+    for issue in [i for i in issues if i.typeName != 'SubTask']:
+        print (issue.key.ljust(10) + issue.summary)
+    print('\r')
+
+
+def output_stats(title, stats):
+    print(title)
+    print('=' * len(title))
+    for k, v in stats.iteritems():
+        print(k.ljust(20) + ':' + str(v))
+    print('\r')
+
+
+def find_board(board_name, greenhopper):
+    boards = [b for b in greenhopper.boards() if b.name == board_name]
+    if len(boards):
+        return boards[0]
+    return None
+
+
+def find_sprint(sprint_name, board, greenhopper):
+    sprints = [s for s in greenhopper.sprints(
+        board.id) if s.name == sprint_name]
+    if len(sprints):
+        return sprints[0]
+    return None
+
+
+def find_project(project_name_or_key, jira):
+    projects = [p for p in jira.projects()
+                if p.name == project_name_or_key
+                or p.key == project_name_or_key]
+    if len(projects):
+        return projects[0]
+    return None
+
+
+def main():
+    args = parse_arguments()
+    config = parse_config(args)
+
+    if args.list_boards and (args.board or args.sprint):
+        print('--list-boards cannot be used in conjunction with a board and sprint id. Use one or the other.')
+        return 1
+    elif not args.list_boards and (not args.board or not args.sprint):
+        print('Either --list-boards or a board and sprint must be specified')
+        return 1
+
+    user = args.user or (
+        'user' in config and config['user']) or getpass.getuser()
+    password = args.password or ('password' in config and config['password']) or (
+        args.prompt and getpass.getpass())
+
+    if not user or not password:
+        print('Username and password are required')
+        return 1
+
+    auth = (user, password)
+    options = {
+        'server': args.server or config['server'] or 'https://jira.atlassian.com'
+    }
+
+    try:
+        jra = JIRA(options, basic_auth=auth)
+        greenhopper = GreenHopper(options, basic_auth=auth)
+    except JIRAError as e:
+        print('ERROR: %s : %s ' % (e.status_code, e.message))
+        return 1
+
+    if args.list_boards:
+        boards = greenhopper.boards()
+        for board in boards:
+            print('%s : %s' % (str(board.id).ljust(5), board.name))
+    else:
+        if not args.board.isdigit():
+            board = find_board(args.board, greenhopper)
+            args.board = board.id
+            if not args.board:
+                sys.stderr.write('Board not found')
+                return 1
+            project = find_project(args.project, jra)
+            if not project:
+                sys.stderr.write('Project not found')
+                return 1
+            sprint = find_sprint(args.sprint, board, greenhopper)
+            if not sprint:
+                sys.stderr.write('Sprint not found')
+                return 1
+
+            completed_issues = greenhopper.completed_issues(args.board, sprint.id)
+            incompleted_issues = greenhopper.incompleted_issues(args.board, sprint.id)
+            stats = gather_sprint_stats(
+                completed_issues, incompleted_issues, jira=jra, default_points=int(config['default_points']))
+            stats['sprint_id'] = sprint.id
+            backlog_stats = gather_backlog_stats(project, jra, default_points=int(config['default_points']))
+            if args.json:
+                output = {}
+                output['incomplete_issues'] = issues_as_list(incompleted_issues)
+                output['completed_issues'] = issues_as_list(completed_issues)
+                output['sprint_statistics'] = stats
+                output['backlog_statistics'] = backlog_stats
+                print(json.dumps(output))
+            else:
+                output_issues('Completed Issues', completed_issues)
+                output_issues('Incomplete Issues', incompleted_issues)
+                output_stats('Sprint Statistics', stats)
+                output_stats('Backlog Statistics', backlog_stats)
+    sys.stdout.flush()
+    sys.stderr.flush()
+    return 0
+
+if __name__ == '__main__':
+    sys.exit(main())

@@ -1,0 +1,59 @@
+<table>
+    <tbody>
+        <tr>
+            <td>Velocity:</td>
+            <td>{{sprint_statistics['velocity']}}</td>
+        </tr>
+        <tr>
+            <td>Average Cycle Time:</td>
+            <td>{{sprint_statistics['average_cycle_time']}} days</td>
+        </tr>
+        <tr>
+            <td>Max Cycle Time:</td>
+            <td>{{sprint_statistics['max_cycle_time']}} days</td>
+        </tr>
+        <tr>
+            <td>Cycle Time StdDev</td>
+            <td>{{sprint_statistics['cycle_time_stddev']}} Days</td>
+        </tr>
+        <tr>
+            <td>Min Cycle Time:</td>
+            <td>{{sprint_statistics['min_cycle_time']}} days</td>
+        </tr>
+        <tr>
+            <td>Age of oldest PBI:</td>
+            <td>{{backlog_statistics['max_pbi_age']}}</td>
+        </tr>
+        <tr>
+            <td>Age of newest PBI:</td>
+            <td>{{backlog_statistics['min_pbi_age']}}</td>
+        </tr>
+        <tr>
+            <td>Average PBI age:</td>
+            <td>{{backlog_statistics['avg_pbi_age']}}</td>
+        </tr>
+    </tbody>
+</table>
+<h2>
+    Completed Items
+</h2>
+<div>
+    <ac:structured-macro ac:name="jira" ac:schema-version="1">
+    <ac:parameter ac:name="columns">key,summary,type,created,updated,due,assignee,reporter,priority,status,resolution
+    </ac:parameter>
+    <ac:parameter ac:name="jqlQuery">Sprint = {{sprint_statistics['sprint_id']}} AND status = Done AND type != Sub-task ORDER BY type DESC, summary ASC
+    </ac:parameter>
+    </ac:structured-macro>
+</div>
+<h2>
+    Incomplete Items
+</h2>
+<div>
+    <ac:structured-macro ac:name="jira" ac:schema-version="1">
+    <ac:parameter ac:name="columns">key,summary,type,created,updated,due,assignee,reporter,priority,status,resolution
+    </ac:parameter>
+    <ac:parameter ac:name="jqlQuery">Sprint = {{sprint_statistics['sprint_id']}} AND status != Done AND type != Sub-task ORDER BY type DESC, summary ASC
+    </ac:parameter>
+    </ac:structured-macro>
+    <br />
+</div>
