@@ -101,6 +101,10 @@ def dot():
         sys.stderr.write('.')
         sys.stderr.flush()
 
+def notif(text):
+    if sys.stderr.isatty():
+        sys.stderr.write(text)
+        sys.stderr.flush()
 
 def sum_story_points(issues, jira, default_points=0):
     points_sum = 0
@@ -115,7 +119,33 @@ def sum_story_points(issues, jira, default_points=0):
     return points_sum
 
 
-def calculate_state_times(state_times):
+def calculate_state_times(issues, jira):
+    all_issues = []
+    for issue in issues:
+        dot()
+        fullissue = jira.issue(issue.key, expand='changelog')
+        all_issues.append(fullissue)
+        def fetch_subtasks(iss):
+            subtasks = []
+            if hasattr(iss, 'fields') and hasattr(iss.fields, 'subtasks'):
+                for subt in iss.fields.subtasks:
+                    dot()
+                    subt = jira.issue(subt.key, expand='changelog')
+                    subtasks.append(subt)
+                    subtasks = subtasks + fetch_subtasks(subt)
+            return subtasks
+        all_issues += fetch_subtasks(fullissue)
+    state_times = defaultdict(lambda: defaultdict(list))
+    for iss in all_issues:
+        for state in iss.changelog.histories:
+            transition_time = dateutil.parser.parse(state.created)
+            for item in state.items:
+                if item.field == 'status':
+                    from_state = item.fromString
+                    to_state = item.toString
+                    state_times[issue.key]['start'].append((to_state, transition_time))
+                    state_times[issue.key]['stop'].append((from_state, transition_time))
+
     durations = defaultdict(list)
     for issue in state_times.keys():
         start_times = state_times[issue]['start']
@@ -128,13 +158,13 @@ def calculate_state_times(state_times):
     state_averages = {}
     for state in durations.keys():
         average_time_in_state = numpy.mean(durations[state])
-        time_in_state_stddev = numpy.std(durations[state])
-        state_averages[state] = (average_time_in_state, time_in_state_stddev)
+        median_time_in_state = numpy.median(durations[state])
+        state_averages["Mean time in '%s' (hours)" % state] = average_time_in_state
+        state_averages["Median time in '%s' (hours)" % state] = median_time_in_state
     return state_averages
 
 def calculate_cycle_times(issues, jira):
     times = []
-    state_times = defaultdict(lambda: defaultdict(list))
     for issue in [i for i in issues if i.typeName != 'SubTask']:
         dot()
         iss = jira.issue(issue.key, expand='changelog')
@@ -142,15 +172,6 @@ def calculate_cycle_times(issues, jira):
         close_time = dateutil.parser.parse(iss.fields.resolutiondate)
         cycle_time = (close_time - open_time).days
         times.append(cycle_time)
-        for state in iss.changelog.histories:
-            transition_time = dateutil.parser.parse(state.created)
-            for item in state.items:
-                if item.field == 'status':
-                    from_state = item.fromString
-                    to_state = item.toString
-                    state_times[issue.key]['start'].append((to_state, transition_time))
-                    state_times[issue.key]['stop'].append((from_state, transition_time))
-    state_time_stats = calculate_state_times(state_times)
     arr = numpy.array(times)
     average_cycle = numpy.mean(arr) if len(arr) else -1
     std_deviation = numpy.std(arr) if len(arr) else -1
@@ -160,7 +181,6 @@ def calculate_cycle_times(issues, jira):
         'max_cycle_time': max(times) if len(times) else -1,
         'average_cycle_time': average_cycle,
         'cycle_time_stddev': std_deviation,
-        'state_times' : state_time_stats,
     }
     return ret
 
@@ -172,6 +192,7 @@ def gather_sprint_stats(completed_issues, incompleted_issues, jira, default_poin
     commitment = sum_story_points(completed_issues + incompleted_issues, jira, default_points=default_points)
     stats['commitment'] = commitment
     stats.update(calculate_cycle_times(completed_issues, jira))
+    stats['ticket states'] = calculate_state_times(completed_issues, jira)
     return stats
 
 
@@ -281,6 +302,7 @@ def main():
     }
 
     try:
+        notif("Connecting to JIRA")
         jra = JIRA(options, basic_auth=auth)
         greenhopper = GreenHopper(options, basic_auth=auth)
     except JIRAError as e:
@@ -306,12 +328,13 @@ def main():
             if not sprint:
                 sys.stderr.write('Sprint not found')
                 return 1
-
+            notif("\nFetching sprint details...")
             completed_issues = greenhopper.completed_issues(args.board, sprint.id)
             incompleted_issues = greenhopper.incompleted_issues(args.board, sprint.id)
             stats = gather_sprint_stats(
                 completed_issues, incompleted_issues, jira=jra, default_points=int(config['default_points']))
             stats['sprint_id'] = sprint.id
+            notif("\nFetching backlog details...")
             backlog_stats = gather_backlog_stats(project, jra, default_points=int(config['default_points']))
             if args.json:
                 output = {}
