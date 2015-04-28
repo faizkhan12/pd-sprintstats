@@ -20,6 +20,7 @@ from jira.client import JIRA
 from jira.client import GreenHopper
 from jira import JIRAError
 from ConfigParser import SafeConfigParser
+from collections import defaultdict
 import dateutil.parser
 import datetime
 import argparse
@@ -114,15 +115,42 @@ def sum_story_points(issues, jira, default_points=0):
     return points_sum
 
 
+def calculate_state_times(state_times):
+    durations = defaultdict(list)
+    for issue in state_times.keys():
+        start_times = state_times[issue]['start']
+        end_times = state_times[issue]['stop']
+        sorted(start_times, key=lambda x: x[1])
+        sorted(end_times, key=lambda x: x[1])
+        for idx, t in enumerate(start_times[1:]):
+            time_in_state = end_times[idx][1] - t[1]
+            durations[end_times[idx][0]].append(time_in_state.seconds / 3600.00)
+    state_averages = {}
+    for state in durations.keys():
+        average_time_in_state = numpy.mean(durations[state])
+        time_in_state_stddev = numpy.std(durations[state])
+        state_averages[state] = (average_time_in_state, time_in_state_stddev)
+    return state_averages
+
 def calculate_cycle_times(issues, jira):
     times = []
+    state_times = defaultdict(lambda: defaultdict(list))
     for issue in [i for i in issues if i.typeName != 'SubTask']:
         dot()
-        iss = jira.issue(issue.key)
+        iss = jira.issue(issue.key, expand='changelog')
         open_time = dateutil.parser.parse(iss.fields.created)
         close_time = dateutil.parser.parse(iss.fields.resolutiondate)
         cycle_time = (close_time - open_time).days
         times.append(cycle_time)
+        for state in iss.changelog.histories:
+            transition_time = dateutil.parser.parse(state.created)
+            for item in state.items:
+                if item.field == 'status':
+                    from_state = item.fromString
+                    to_state = item.toString
+                    state_times[issue.key]['start'].append((to_state, transition_time))
+                    state_times[issue.key]['stop'].append((from_state, transition_time))
+    state_time_stats = calculate_state_times(state_times)
     arr = numpy.array(times)
     average_cycle = numpy.mean(arr) if len(arr) else -1
     std_deviation = numpy.std(arr) if len(arr) else -1
@@ -131,7 +159,8 @@ def calculate_cycle_times(issues, jira):
         'min_cycle_time': min(times) if len(times) else -1,
         'max_cycle_time': max(times) if len(times) else -1,
         'average_cycle_time': average_cycle,
-        'cycle_time_stddev': std_deviation
+        'cycle_time_stddev': std_deviation,
+        'state_times' : state_time_stats,
     }
     return ret
 
