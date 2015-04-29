@@ -1,65 +1,35 @@
 #!/usr/bin/env python
 
-#Copyright:: Copyright (c) 2015 PagerDuty, Inc.
-#License:: Apache License, Version 2.0
+# Copyright:: Copyright (c) 2015 PagerDuty, Inc.
+# License:: Apache License, Version 2.0
 #
-#Licensed under the Apache License, Version 2.0 (the "License");
-#you may not use this file except in compliance with the License.
-#You may obtain a copy of the License at
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
 #
 #    http://www.apache.org/licenses/LICENSE-2.0
 #
-#Unless required by applicable law or agreed to in writing, software
-#distributed under the License is distributed on an "AS IS" BASIS,
-#WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#See the License for the specific language governing permissions and
-#limitations under the License.
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 from __future__ import print_function
 from jira.client import JIRA
 from jira.client import GreenHopper
 from jira import JIRAError
-from ConfigParser import SafeConfigParser
 from collections import defaultdict
+from lib.configuration import parse_config
+from lib.jirahelpers import find_board, find_custom_field, find_sprint, find_project, fetch_subtasks
+from lib.output import dot, output_issues, output_stats
 import dateutil.parser
 import datetime
 import argparse
 import getpass
 import sys
 import numpy
-import os
 import json
-
-
-def parse_config(args):
-    settings = {}
-    parser = SafeConfigParser()
-    config_precedence = [
-        '/etc/sprintstats.cfg',
-        '/usr/local/etc/sprintstats.cfg',
-        '~/.sprintstats.cfg',
-        'config.cfg'
-    ]
-    config_file = None
-    for f in config_precedence:
-        if os.path.exists(f):
-            config_file = f
-
-    if args.config:
-        if os.path.exists(args.config):
-            config_file = args.config
-        else:
-            print('WARNING: Specified config file %s not found' % (os.path.abspath(args.config)))
-            if config_file and os.path.exists(config_file):
-                print('Using %s instead.' % (os.path.abspath(config_file)))
-
-    if config_file and os.path.exists(config_file):
-        parser.read('config.cfg')
-        if parser.has_section('default'):
-            settings = dict(parser.items('default'))
-    if not 'default_points' in settings:
-        settings['default_points'] = 0
-    return settings
 
 
 def parse_arguments():
@@ -89,23 +59,6 @@ def parse_arguments():
     return args
 
 
-def find_custom_field(field_name, jira):
-    fields = jira.fields()
-    for f in fields:
-        if field_name in f['clauseNames']:
-            return f
-
-
-def dot():
-    if sys.stderr.isatty():
-        sys.stderr.write('.')
-        sys.stderr.flush()
-
-def notif(text):
-    if sys.stderr.isatty():
-        sys.stderr.write(text)
-        sys.stderr.flush()
-
 def sum_story_points(issues, jira, default_points=0):
     points_sum = 0
     story_point_field = find_custom_field('Story Points', jira)
@@ -125,16 +78,7 @@ def calculate_state_times(issues, jira):
         dot()
         fullissue = jira.issue(issue.key, expand='changelog')
         all_issues.append(fullissue)
-        def fetch_subtasks(iss):
-            subtasks = []
-            if hasattr(iss, 'fields') and hasattr(iss.fields, 'subtasks'):
-                for subt in iss.fields.subtasks:
-                    dot()
-                    subt = jira.issue(subt.key, expand='changelog')
-                    subtasks.append(subt)
-                    subtasks = subtasks + fetch_subtasks(subt)
-            return subtasks
-        all_issues += fetch_subtasks(fullissue)
+        all_issues += fetch_subtasks(fullissue, jira)
     state_times = defaultdict(lambda: defaultdict(list))
     for iss in all_issues:
         for state in iss.changelog.histories:
@@ -162,6 +106,7 @@ def calculate_state_times(issues, jira):
         state_averages["Mean time in '%s' (hours)" % state] = average_time_in_state
         state_averages["Median time in '%s' (hours)" % state] = median_time_in_state
     return state_averages
+
 
 def calculate_cycle_times(issues, jira):
     times = []
@@ -236,46 +181,6 @@ def issues_as_list(issues):
     return issue_list
 
 
-def output_issues(title, issues):
-    print (title)
-    print ('=' * len(title))
-    for issue in [i for i in issues if i.typeName != 'SubTask']:
-        print (issue.key.ljust(10) + issue.summary)
-    print('\r')
-
-
-def output_stats(title, stats):
-    print(title)
-    print('=' * len(title))
-    for k, v in stats.iteritems():
-        print(k.ljust(20) + ':' + str(v))
-    print('\r')
-
-
-def find_board(board_name, greenhopper):
-    boards = [b for b in greenhopper.boards() if b.name == board_name]
-    if len(boards):
-        return boards[0]
-    return None
-
-
-def find_sprint(sprint_name, board, greenhopper):
-    sprints = [s for s in greenhopper.sprints(
-        board.id) if s.name == sprint_name]
-    if len(sprints):
-        return sprints[0]
-    return None
-
-
-def find_project(project_name_or_key, jira):
-    projects = [p for p in jira.projects()
-                if p.name == project_name_or_key
-                or p.key == project_name_or_key]
-    if len(projects):
-        return projects[0]
-    return None
-
-
 def main():
     args = parse_arguments()
     config = parse_config(args)
@@ -302,7 +207,6 @@ def main():
     }
 
     try:
-        notif("Connecting to JIRA")
         jra = JIRA(options, basic_auth=auth)
         greenhopper = GreenHopper(options, basic_auth=auth)
     except JIRAError as e:
@@ -328,13 +232,11 @@ def main():
             if not sprint:
                 sys.stderr.write('Sprint not found')
                 return 1
-            notif("\nFetching sprint details...")
             completed_issues = greenhopper.completed_issues(args.board, sprint.id)
             incompleted_issues = greenhopper.incompleted_issues(args.board, sprint.id)
             stats = gather_sprint_stats(
                 completed_issues, incompleted_issues, jira=jra, default_points=int(config['default_points']))
             stats['sprint_id'] = sprint.id
-            notif("\nFetching backlog details...")
             backlog_stats = gather_backlog_stats(project, jra, default_points=int(config['default_points']))
             if args.json:
                 output = {}
