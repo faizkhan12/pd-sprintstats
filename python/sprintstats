@@ -65,30 +65,27 @@ def sum_story_points(issues, jira, default_points=0):
     if not story_point_field:
         raise Exception(
             'Could not find the story points custom field for this jira instance')
-
-    for issue in [i for i in issues if i.typeName != 'SubTask']:
-        iss = jira.issue(issue.key)
-        points_sum += (getattr(iss.fields, story_point_field['id']) or default_points)
+    for issue in [i for i in issues if i.fields.issuetype != 'SubTask']:
+        iss = issue  # jira.issue(issue.key)
+        points_sum += (getattr(iss.fields,
+                               story_point_field['id']) or default_points)
     return points_sum
 
 
 def calculate_state_times(issues, jira):
-    all_issues = []
-    for issue in issues:
-        dot()
-        fullissue = jira.issue(issue.key, expand='changelog')
-        all_issues.append(fullissue)
-        all_issues += fetch_subtasks(fullissue, jira)
+    issues += fetch_subtasks(issues, jira)
     state_times = defaultdict(lambda: defaultdict(list))
-    for iss in all_issues:
-        for state in iss.changelog.histories:
+    for issue in issues:
+        for state in issue.changelog.histories:
             transition_time = dateutil.parser.parse(state.created)
             for item in state.items:
                 if item.field == 'status':
                     from_state = item.fromString
                     to_state = item.toString
-                    state_times[issue.key]['start'].append((to_state, transition_time))
-                    state_times[issue.key]['stop'].append((from_state, transition_time))
+                    state_times[issue.key]['start'].append(
+                        (to_state, transition_time))
+                    state_times[issue.key]['stop'].append(
+                        (from_state, transition_time))
 
     durations = defaultdict(list)
     for issue in state_times.keys():
@@ -98,23 +95,25 @@ def calculate_state_times(issues, jira):
         sorted(end_times, key=lambda x: x[1])
         for idx, t in enumerate(start_times[1:]):
             time_in_state = end_times[idx][1] - t[1]
-            durations[end_times[idx][0]].append(time_in_state.seconds / 3600.00)
+            durations[end_times[idx][0]].append(
+                time_in_state.seconds / 3600.00)
     state_averages = {}
     for state in durations.keys():
         average_time_in_state = numpy.mean(durations[state])
         median_time_in_state = numpy.median(durations[state])
-        state_averages['Mean hours in "{0}"'.format(state)] = average_time_in_state
-        state_averages['Median hours in "{0}"'.format(state)] = median_time_in_state
+        state_averages[
+            'Mean hours in "{0}"'.format(state)] = average_time_in_state
+        state_averages[
+            'Median hours in "{0}"'.format(state)] = median_time_in_state
     return state_averages
 
 
 def calculate_cycle_times(issues, jira):
     times = []
-    for issue in [i for i in issues if i.typeName != 'SubTask']:
+    for issue in [i for i in issues if i.fields.issuetype != 'SubTask']:
         dot()
-        iss = jira.issue(issue.key, expand='changelog')
-        open_time = dateutil.parser.parse(iss.fields.created)
-        close_time = dateutil.parser.parse(iss.fields.resolutiondate)
+        open_time = dateutil.parser.parse(issue.fields.created)
+        close_time = dateutil.parser.parse(issue.fields.resolutiondate)
         cycle_time = (close_time - open_time).days
         times.append(cycle_time)
     arr = numpy.array(times)
@@ -132,9 +131,11 @@ def calculate_cycle_times(issues, jira):
 
 def gather_sprint_stats(completed_issues, incompleted_issues, jira, default_points=0):
     stats = {}
-    velocity = sum_story_points(completed_issues, jira, default_points=default_points)
+    velocity = sum_story_points(
+        completed_issues, jira, default_points=default_points)
     stats['Sprint Velocity'] = velocity
-    commitment = sum_story_points(completed_issues + incompleted_issues, jira, default_points=default_points)
+    commitment = sum_story_points(
+        completed_issues + incompleted_issues, jira, default_points=default_points)
     stats['Sprint Commitment'] = commitment
     stats.update(calculate_cycle_times(completed_issues, jira))
     stats['Ticket States'] = calculate_state_times(completed_issues, jira)
@@ -143,7 +144,7 @@ def gather_sprint_stats(completed_issues, incompleted_issues, jira, default_poin
 
 def gather_backlog_stats(project, jira, default_points=0):
     incomplete_issues = jira.search_issues(
-        'project={0} AND status != Done and type != Sub-task and type != Epic'.format(project.key), maxResults=-1)
+        'project={0} AND status != Done and type != Sub-task and type != Epic'.format(project.key), maxResults=-1, expand='changelog')
     story_point_field = find_custom_field('Story Points', jira)
     stories = [
         i for i in incomplete_issues if i.fields.issuetype.name == 'Story']
@@ -154,8 +155,8 @@ def gather_backlog_stats(project, jira, default_points=0):
     ages = []
     for issue in incomplete_issues:
         dot()
-        iss = jira.issue(issue.key)
-        open_time = dateutil.parser.parse(iss.fields.created).replace(tzinfo=None)
+        open_time = dateutil.parser.parse(
+            issue.fields.created).replace(tzinfo=None)
         age = (datetime.datetime.now() - open_time).days
         ages.append(age)
     arr = numpy.array(ages)
@@ -176,8 +177,8 @@ def gather_backlog_stats(project, jira, default_points=0):
 
 def issues_as_list(issues):
     issue_list = []
-    for issue in [i for i in issues if i.typeName != 'SubTask']:
-        issue_list.append({issue.key: issue.summary})
+    for issue in [i for i in issues if i.fields.issuetype != 'SubTask']:
+        issue_list.append({issue.key: issue.fields.summary})
     return issue_list
 
 
@@ -186,7 +187,8 @@ def main():
     config = parse_config(args)
 
     if args.list_boards and (args.board or args.sprint):
-        print('--list-boards cannot be used in conjunction with a board and sprint id. Use one or the other.')
+        print(
+            '--list-boards cannot be used in conjunction with a board and sprint id. Use one or the other.')
         return 1
     elif not args.list_boards and (not args.board or not args.sprint):
         print('Either --list-boards or a board and sprint must be specified')
@@ -232,15 +234,23 @@ def main():
             if not sprint:
                 sys.stderr.write('Sprint not found')
                 return 1
-            completed_issues = greenhopper.completed_issues(args.board, sprint.id)
-            incompleted_issues = greenhopper.incompleted_issues(args.board, sprint.id)
+            completed_issues = greenhopper.completed_issues(
+                args.board, sprint.id)
+            completed_issues = jra.search_issues('key in ({0})'.format(','.join(
+                [issue.key for issue in completed_issues])), maxResults=-1, expand='changelog')
+            incompleted_issues = greenhopper.incompleted_issues(
+                args.board, sprint.id)
+            incompleted_issues = jra.search_issues('key in ({0})'.format(','.join(
+                [issue.key for issue in incompleted_issues])), maxResults=-1, expand='changelog')
             stats = gather_sprint_stats(
                 completed_issues, incompleted_issues, jira=jra, default_points=int(config['default_points']))
             stats['sprint_id'] = sprint.id
-            backlog_stats = gather_backlog_stats(project, jra, default_points=int(config['default_points']))
+            backlog_stats = gather_backlog_stats(
+                project, jra, default_points=int(config['default_points']))
             if args.json:
                 output = {}
-                output['incomplete_issues'] = issues_as_list(incompleted_issues)
+                output['incomplete_issues'] = issues_as_list(
+                    incompleted_issues)
                 output['completed_issues'] = issues_as_list(completed_issues)
                 output['sprint_statistics'] = stats
                 output['backlog_statistics'] = backlog_stats

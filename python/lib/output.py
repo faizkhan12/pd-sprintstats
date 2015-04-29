@@ -16,17 +16,17 @@ from __future__ import print_function
 import sys
 
 
-def dot():
+def dot(char='.'):
     if sys.stderr.isatty():
-        sys.stderr.write('.')
+        sys.stderr.write(char)
         sys.stderr.flush()
 
 
 def output_issues(title, issues):
     print (title)
     print ('=' * len(title))
-    for issue in [i for i in issues if i.typeName != 'SubTask']:
-        print (issue.key.ljust(10) + issue.summary)
+    for issue in [i for i in issues if i.fields.issuetype != 'SubTask']:
+        print (issue.key.ljust(10) + issue.fields.summary)
     print('\r')
 
 

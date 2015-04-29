@@ -46,12 +46,7 @@ def find_project(project_name_or_key, jira):
     return None
 
 
-def fetch_subtasks(iss, jira):
-    subtasks = []
-    if hasattr(iss, 'fields') and hasattr(iss.fields, 'subtasks'):
-        for subt in iss.fields.subtasks:
-            dot()
-            subt = jira.issue(subt.key, expand='changelog')
-            subtasks.append(subt)
-            subtasks = subtasks + fetch_subtasks(subt, jira)
+def fetch_subtasks(issues, jira):
+    subtasks = jira.search_issues('parent in ({0})'.format(
+        ','.join([i.key for i in issues])), expand='changelog', maxResults=-1)
     return subtasks
