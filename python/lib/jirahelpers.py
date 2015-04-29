@@ -1,10 +1,26 @@
+# Copyright:: Copyright (c) 2015 PagerDuty, Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+
 from lib.output import dot
+
 
 def find_custom_field(field_name, jira):
     fields = jira.fields()
     for f in fields:
         if field_name in f['clauseNames']:
             return f
+
 
 def find_board(board_name, greenhopper):
     boards = [b for b in greenhopper.boards() if b.name == board_name]
@@ -29,6 +45,7 @@ def find_project(project_name_or_key, jira):
         return projects[0]
     return None
 
+
 def fetch_subtasks(iss, jira):
     subtasks = []
     if hasattr(iss, 'fields') and hasattr(iss.fields, 'subtasks'):
@@ -38,4 +55,3 @@ def fetch_subtasks(iss, jira):
             subtasks.append(subt)
             subtasks = subtasks + fetch_subtasks(subt, jira)
     return subtasks
-
