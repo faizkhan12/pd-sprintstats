@@ -34,10 +34,11 @@ def parse_config(args):
         if os.path.exists(args.config):
             config_file = args.config
         else:
-            print('WARNING: Specified config file %s not found' %
-                  (os.path.abspath(args.config)))
+            print('WARNING: Specified config file {0} not found'.format(
+                (os.path.abspath(args.config))))
             if config_file and os.path.exists(config_file):
-                print('Using %s instead.' % (os.path.abspath(config_file)))
+                print(
+                    'Using {0} instead.'.format(os.path.abspath(config_file)))
 
     if config_file and os.path.exists(config_file):
         parser.read('config.cfg')

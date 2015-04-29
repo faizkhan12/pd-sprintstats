@@ -103,8 +103,8 @@ def calculate_state_times(issues, jira):
     for state in durations.keys():
         average_time_in_state = numpy.mean(durations[state])
         median_time_in_state = numpy.median(durations[state])
-        state_averages["Mean time in '%s' (hours)" % state] = average_time_in_state
-        state_averages["Median time in '%s' (hours)" % state] = median_time_in_state
+        state_averages['Mean hours in "{0}"'.format(state)] = average_time_in_state
+        state_averages['Median hours in "{0}"'.format(state)] = median_time_in_state
     return state_averages
 
 
@@ -133,17 +133,17 @@ def calculate_cycle_times(issues, jira):
 def gather_sprint_stats(completed_issues, incompleted_issues, jira, default_points=0):
     stats = {}
     velocity = sum_story_points(completed_issues, jira, default_points=default_points)
-    stats['velocity'] = velocity
+    stats['Sprint Velocity'] = velocity
     commitment = sum_story_points(completed_issues + incompleted_issues, jira, default_points=default_points)
-    stats['commitment'] = commitment
+    stats['Sprint Commitment'] = commitment
     stats.update(calculate_cycle_times(completed_issues, jira))
-    stats['ticket states'] = calculate_state_times(completed_issues, jira)
+    stats['Ticket States'] = calculate_state_times(completed_issues, jira)
     return stats
 
 
 def gather_backlog_stats(project, jira, default_points=0):
     incomplete_issues = jira.search_issues(
-        'project=%s AND status != Done and type != Sub-task and type != Epic' % project.key, maxResults=-1)
+        'project={0} AND status != Done and type != Sub-task and type != Epic'.format(project.key), maxResults=-1)
     story_point_field = find_custom_field('Story Points', jira)
     stories = [
         i for i in incomplete_issues if i.fields.issuetype.name == 'Story']
@@ -210,13 +210,13 @@ def main():
         jra = JIRA(options, basic_auth=auth)
         greenhopper = GreenHopper(options, basic_auth=auth)
     except JIRAError as e:
-        print('ERROR: %s : %s ' % (e.status_code, e.message))
+        print('ERROR: {0} : {1} '.format(e.status_code, e.message))
         return 1
 
     if args.list_boards:
         boards = greenhopper.boards()
         for board in boards:
-            print('%s : %s' % (str(board.id).ljust(5), board.name))
+            print('{0} : {1}'.format(str(board.id).ljust(5), board.name))
     else:
         if not args.board.isdigit():
             board = find_board(args.board, greenhopper)
