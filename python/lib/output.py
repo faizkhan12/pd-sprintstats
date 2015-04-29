@@ -34,11 +34,10 @@ def output_stats(title, stats, indent=0):
     print('\t' * indent + title)
     print('\t' * indent + '=' * len(title))
     for k, v in sorted(stats.iteritems()):
+        if isinstance(v, float):
+            v = round(v, 2)
         if isinstance(v, dict):
             output_stats(k, v, indent + 1)
         else:
             print('\t' * indent + k.ljust(20) + ':' + str(v))
     print('\r')
-
-
-
