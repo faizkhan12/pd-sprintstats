@@ -57,32 +57,7 @@ Once you've got your credentials set up, you can process some stats!
     max_cycle_time      :38
 
 
-##Development - Python
-The script is written in python 2.7 and has a number of dependencies. For ease, it's recommended you use a virtual environment
-for development purposes.
-
-    $ sudo -H easy_install pip
-    $ sudo -H pip install virtualenv
-
-Once those are installed, and you've cloned this repository you're all set.
-
-    $ cd /path/to/pd-sprintstats/python
-    $ virtualenv env
-    New python executable in env/bin/python
-    Installing setuptools, pip...done.
-
-    #activate the virtualenv
-    $ . env/bin/activate
-
-    #install the required libraries
-    $ pip install -r requirements.txt
-    Downloading/unpacking jira==0.39 (from -r requirements.txt (line 1))
-      Downloading jira-0.39-py2.py3-none-any.whl (42kB): 42kB downloaded
-    ...etc
-
-
-
-The script should now be ready to run. Try it out.
+### Scripts and Options
 
     $./sprintstats -h
     usage: sprintstats [-h] [--user USER] [--password PASSWORD] [-P]
