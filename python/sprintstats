@@ -65,9 +65,8 @@ def sum_story_points(issues, jira, default_points=0):
     if not story_point_field:
         raise Exception(
             'Could not find the story points custom field for this jira instance')
-    for issue in [i for i in issues if i.fields.issuetype != 'SubTask']:
-        iss = issue  # jira.issue(issue.key)
-        points_sum += (getattr(iss.fields,
+    for issue in [i for i in issues if i.fields.issuetype.name != 'Sub-task']:
+        points_sum += (getattr(issue.fields,
                                story_point_field['id']) or default_points)
     return points_sum
 
@@ -110,7 +109,7 @@ def calculate_state_times(issues, jira):
 
 def calculate_cycle_times(issues, jira):
     times = []
-    for issue in [i for i in issues if i.fields.issuetype != 'SubTask']:
+    for issue in [i for i in issues if i.fields.issuetype.name != 'Sub-task']:
         dot()
         open_time = dateutil.parser.parse(issue.fields.created)
         close_time = dateutil.parser.parse(issue.fields.resolutiondate)
@@ -177,7 +176,7 @@ def gather_backlog_stats(project, jira, default_points=0):
 
 def issues_as_list(issues):
     issue_list = []
-    for issue in [i for i in issues if i.fields.issuetype != 'SubTask']:
+    for issue in [i for i in issues if i.fields.issuetype.name != 'Sub-task']:
         issue_list.append({issue.key: issue.fields.summary})
     return issue_list
 

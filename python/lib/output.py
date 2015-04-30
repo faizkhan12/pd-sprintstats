@@ -25,7 +25,8 @@ def dot(char='.'):
 def output_issues(title, issues):
     print (title)
     print ('=' * len(title))
-    for issue in [i for i in issues if i.fields.issuetype != 'SubTask']:
+    import pdb; pdb.set_trace()
+    for issue in [i for i in issues if i.fields.issuetype.name != 'Sub-task']:
         print (issue.key.ljust(10) + issue.fields.summary)
     print('\r')
 
