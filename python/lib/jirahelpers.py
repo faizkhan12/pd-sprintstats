@@ -12,8 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
-from lib.output import dot
-
 
 def find_custom_field(field_name, jira):
     fields = jira.fields()

@@ -44,6 +44,6 @@ def parse_config(args):
         parser.read('config.cfg')
         if parser.has_section('default'):
             settings = dict(parser.items('default'))
-    if not 'default_points' in settings:
+    if 'default_points' not in settings:
         settings['default_points'] = 0
     return settings
