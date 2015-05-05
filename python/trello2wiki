@@ -14,7 +14,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 
-from ConfigParser import SafeConfigParser
 from lib.confluence import Confluence
 from jinja2 import Environment, PackageLoader
 from lib.configuration import parse_config
@@ -22,9 +21,6 @@ from trello import TrelloClient
 import argparse
 import getpass
 import sys
-import os
-import json
-import requests
 
 
 def parse_arguments():
@@ -63,7 +59,6 @@ def get_board_contents(board, trello):
     contents['name'] = board.name
     contents['data'] = []
     cardlists = board.all_lists()
-    max_x = len(cardlists)
     max_y = 0
     for cardlist in cardlists:
         out_list = [cardlist.name]
