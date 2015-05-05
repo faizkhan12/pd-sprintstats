@@ -4,7 +4,7 @@ with open('requirements.txt') as f:
     required = f.read().splitlines()
 
 setup(name='pd-sprintstats',
-      version='3.00',
+      version='3.1',
       description='Gathers some statistics for a sprint from JIRA',
       author='Jason Diller',
       author_email='jdiller@pagerduty.com',
