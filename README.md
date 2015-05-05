@@ -16,7 +16,7 @@ To use the script, you need a few things.
 * A user with access to that instance (e.g. jdiller)
 * That user's password.
 
-The easiest thing to do is make a config file and specify these things there using the following format: 
+The easiest thing to do is make a config file and specify these things there using the following format:
 
     [default]
     user=YOUR_USER
@@ -123,3 +123,54 @@ This script will use the same credentials files in the same precedence as the st
 ###Using the two together
     sprintstats -b "My Board" -t "My Sprint" -r "AProject" --json | wikifysprint -e "Team Space" -t "My Sprint Review"
 
+##Wiki-fy Trello Boards
+We use Trello boards to conduct retros, but want to capture the state of the board in our wiki. An additional script can be used to take a snapshot of the state of the trello board and convert it into a wiki page. It uses many of the same options as the sprint review wiki script.
+
+    usage: trello2wiki [-h] [--user USER] [--password PASSWORD] [--board BOARD]
+                       [-P] [--server SERVER] [--config CONFIG] [--space SPACE]
+                       [--parent [PARENT]] [--title TITLE]
+                       [--trello-key TRELLO_KEY] [--trello-secret TRELLO_SECRET]
+                       [--trello-token TRELLO_TOKEN]
+                       [--trello-token-secret TRELLO_TOKEN_SECRET]
+
+    Create a new Confluence page with the contents of a trello board
+
+    optional arguments:
+      -h, --help            show this help message and exit
+      --user USER, -u USER  The Confluence user name to used for auth. If omitted
+                            the current user name will be used.
+      --password PASSWORD, -p PASSWORD
+                            The Confluence password to be used for auth.
+      --board BOARD, -b BOARD
+                            The name or id of the trello board to convert to a
+                            wiki page
+      -P                    Prompt for confluence password.
+      --server SERVER, -s SERVER
+      --config CONFIG, -c CONFIG
+                            The path to a config file containing Confluence server
+                            and/or Trello credentials (See README.md)
+      --space SPACE, -e SPACE
+                            The space that will contain the created/updated page
+      --parent [PARENT], -r [PARENT]
+                            The parent of the created page. (Ignored if the page
+                            already exists)
+      --title TITLE, -t TITLE
+                            The title of the created/updated page
+      --trello-key TRELLO_KEY
+                            API Key for Trello Authentication
+      --trello-secret TRELLO_SECRET
+                            API Secret for Trello Authentication
+      --trello-token TRELLO_TOKEN
+                            OAuth Token for Trello Authentication
+      --trello-token-secret TRELLO_TOKEN_SECRET
+                            OAuth Token Secret for Trello Authentication
+
+## Trello Authentication
+You will need trello authentication tokens to use this script. They can be specified on the command line or added to one of the config files above using the following key/value pairs:
+
+    trello_key=REPLACE_WITH_YOUR_API_KEY
+    trello_secret=REPLACE_WITH_YOUR_API_SECRET
+    trello_token=RELPLACE_WITH_OAUTH_TOKEN
+    trello_token_secret=REPLACE_WITH_OAUTH_TOKEN_SECRET
+
+You can find the information for how to obtain the above tokens [in the Trello API documentation](https://trello.com/docs/gettingstarted/index.html#getting-an-application-key)

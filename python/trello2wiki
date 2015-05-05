@@ -1,0 +1,178 @@
+#!/usr/bin/env python
+
+# Copyright:: Copyright (c) 2015 PagerDuty, Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+
+from lib.confluence import Confluence
+from jinja2 import Environment, PackageLoader
+from lib.configuration import parse_config
+from trello import TrelloClient, Unauthorized
+import argparse
+import getpass
+import sys
+
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(
+        description='Create a new Confluence page with the contents of a trello board')
+    parser.add_argument('--user', '-u', metavar='USER',
+                        help='The Confluence user name to used for auth. If omitted the current user name will be used.')
+    parser.add_argument('--password', '-p', metavar='PASSWORD',
+                        help='The Confluence password to be used for auth.')
+    parser.add_argument('--board', '-b', metavar='BOARD',
+                        help='The name or id of the trello board to convert to a wiki page')
+    parser.add_argument(
+        '-P', action='store_true', dest='prompt', help='Prompt for confluence password.')
+    parser.add_argument('--server', '-s', metavar='SERVER')
+    parser.add_argument(
+        '--config', '-c', help='The path to a config file containing Confluence server and/or Trello credentials (See README.md)')
+    parser.add_argument(
+        '--space', '-e', help='The space that will contain the created/updated page', metavar='SPACE')
+    parser.add_argument(
+        '--parent', '-r', help='The parent of the created page. (Ignored if the page already exists)', nargs='?', default=None)
+    parser.add_argument(
+        '--title', '-t', help='The title of the created/updated page')
+    parser.add_argument(
+        '--trello-key', help='API Key for Trello Authentication')
+    parser.add_argument(
+        '--trello-secret', help='API Secret for Trello Authentication')
+    parser.add_argument(
+        '--trello-token', help='OAuth Token for Trello Authentication')
+    parser.add_argument(
+        '--trello-token-secret', help='OAuth Token Secret for Trello Authentication')
+    args = parser.parse_args()
+    return args
+
+
+def find_board(board_name_or_id, boards):
+    board_by_id = next((b for b in boards if b.id == board_name_or_id), None)
+    board_by_name = next(
+        (b for b in boards if b.name == board_name_or_id), None)
+    return board_by_id or board_by_name
+
+
+def get_board_contents(board, trello):
+    contents = {}
+    contents['url'] = board.url
+    contents['name'] = board.name
+    contents['data'] = []
+    cardlists = board.all_lists()
+    max_y = 0
+    for cardlist in cardlists:
+        out_list = [cardlist.name]
+        list_cards = cardlist.list_cards()
+        max_y = len(list_cards) if len(list_cards) > max_y else max_y
+        for card in list_cards:
+            out_card = {}
+            # for some reason ampersands aren't being escaped by
+            # the template and it's causing confluence to reject
+            # the page contnent, so manually convert to an entity
+            out_card['name'] = card.name.replace('&', '&amp;')
+            members = card.member_ids
+            out_card['assignees'] = []
+            for member in members:
+                assignee = trello.get_member(member)
+                out_card['assignees'].append(assignee.full_name)
+            out_list.append(out_card)
+        contents['data'].append(out_list)
+    # make the 2d-array uniform (i.e. not jagged)
+    for row in contents['data']:
+        if len(row) < max_y:
+            row.extend([None] * (max_y - len(row) + 1))
+    # rotate the 2d list so we can display it like an html table
+    table = reversed(contents['data'])
+    contents['data'] = zip(*table)
+    return contents
+
+
+def main():
+    args = parse_arguments()
+    config = parse_config(args)
+
+    user = args.user or (
+        'user' in config and config['user']) or getpass.getuser()
+    password = args.password or ('password' in config and config['password']) or (
+        args.prompt and getpass.getpass())
+
+    if not user or not password:
+        sys.stderr.write('Username and password are required')
+        return 1
+
+    options = {
+        'server': args.server or config['server'] or 'https://confluence.atlassian.com'
+    }
+
+    try:
+        confluence = Confluence(
+            options['server'] + 'wiki/rpc/xmlrpc', user, password)
+        scratch = confluence.get_page('~jdiller', 'Scratch Page')
+        f = open('/tmp/template.html', 'w')
+        f.write(scratch['content'])
+        f.close()
+    except Exception as e:
+        sys.stderr.write('ERROR: %s' % (e.message))
+        return 1
+
+    trello_auth = {
+        'api_key': unicode(args.trello_key or config['trello_key']),
+        'api_secret': unicode(args.trello_secret or config['trello_secret']),
+        'token': unicode(args.trello_token or config['trello_token']),
+        'token_secret': unicode(args.trello_token_secret or config['trello_token_secret'])
+    }
+    try:
+        trello = TrelloClient(**trello_auth)
+        boards = trello.list_boards()
+    except Unauthorized:
+        sys.stderr.write("Trello Authentication Failed\n")
+        return 1
+
+    board = find_board(args.board, boards)
+    if not board:
+        sys.stderr.write('Board not found\n')
+        sys.stderr.write('Available boards with current credentials:\n')
+        for board in trello.list_boards():
+            sys.stderr.write(board.name + '\n')
+        return 1
+
+    contents = get_board_contents(board, trello)
+    if not args.space:
+        sys.stderr.write('Wiki space is required')
+        return 1
+    if not args.title:
+        sys.stderr.write('Page title is required')
+        return 1
+
+    env = Environment(loader=PackageLoader('templates', ''))
+    page_template = env.get_template('trello_board.html.j2')
+    page_content = page_template.render(board=contents)
+    page = confluence.get_page(args.space, args.title)
+    parent_page_id = None
+    if args.parent:
+        parent_page = confluence.get_page(args.space, args.parent)
+        if parent_page:
+            parent_page_id = parent_page['id']
+    if page:
+        page['content'] = page_content
+    else:
+        page = {'title': args.title,
+                'space': args.space, 'content': page_content}
+        if parent_page_id:
+            page['parentId'] = parent_page_id
+    confluence.update_page(page)
+    sys.stdout.flush()
+    sys.stderr.flush()
+    return 0
+
+if __name__ == '__main__':
+    sys.exit(main())
