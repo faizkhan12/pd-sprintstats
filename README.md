@@ -129,6 +129,9 @@ We use Trello boards to conduct retros, but want to capture the state of the boa
     usage: trello2wiki [-h] [--user USER] [--password PASSWORD] [--board BOARD]
                        [-P] [--server SERVER] [--config CONFIG] [--space SPACE]
                        [--parent [PARENT]] [--title TITLE]
+                       [--trello-key TRELLO_KEY] [--trello-secret TRELLO_SECRET]
+                       [--trello-token TRELLO_TOKEN]
+                       [--trello-token-secret TRELLO_TOKEN_SECRET]
 
     Create a new Confluence page with the contents of a trello board
 
@@ -153,9 +156,17 @@ We use Trello boards to conduct retros, but want to capture the state of the boa
                             already exists)
       --title TITLE, -t TITLE
                             The title of the created/updated page
+      --trello-key TRELLO_KEY
+                            API Key for Trello Authentication
+      --trello-secret TRELLO_SECRET
+                            API Secret for Trello Authentication
+      --trello-token TRELLO_TOKEN
+                            OAuth Token for Trello Authentication
+      --trello-token-secret TRELLO_TOKEN_SECRET
+                            OAuth Token Secret for Trello Authentication
 
 ## Trello Authentication
-You will need trello authentication tokens to use this script. They can be specified on the command line or (recommended) added to one of the config files above using the following key/value pairs:
+You will need trello authentication tokens to use this script. They can be specified on the command line or added to one of the config files above using the following key/value pairs:
 
     trello_key=REPLACE_WITH_YOUR_API_KEY
     trello_secret=REPLACE_WITH_YOUR_API_SECRET

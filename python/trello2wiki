@@ -17,7 +17,7 @@
 from lib.confluence import Confluence
 from jinja2 import Environment, PackageLoader
 from lib.configuration import parse_config
-from trello import TrelloClient
+from trello import TrelloClient, Unauthorized
 import argparse
 import getpass
 import sys
@@ -41,15 +41,24 @@ def parse_arguments():
         '--space', '-e', help='The space that will contain the created/updated page', metavar='SPACE')
     parser.add_argument(
         '--parent', '-r', help='The parent of the created page. (Ignored if the page already exists)', nargs='?', default=None)
-    parser.add_argument('--title', '-t', help='The title of the created/updated page')
+    parser.add_argument(
+        '--title', '-t', help='The title of the created/updated page')
+    parser.add_argument(
+        '--trello-key', help='API Key for Trello Authentication')
+    parser.add_argument(
+        '--trello-secret', help='API Secret for Trello Authentication')
+    parser.add_argument(
+        '--trello-token', help='OAuth Token for Trello Authentication')
+    parser.add_argument(
+        '--trello-token-secret', help='OAuth Token Secret for Trello Authentication')
     args = parser.parse_args()
     return args
 
 
-def find_board(board_name_or_id, trello):
-    boards = trello.list_boards()
+def find_board(board_name_or_id, boards):
     board_by_id = next((b for b in boards if b.id == board_name_or_id), None)
-    board_by_name = next((b for b in boards if b.name == board_name_or_id), None)
+    board_by_name = next(
+        (b for b in boards if b.name == board_name_or_id), None)
     return board_by_id or board_by_name
 
 
@@ -66,7 +75,10 @@ def get_board_contents(board, trello):
         max_y = len(list_cards) if len(list_cards) > max_y else max_y
         for card in list_cards:
             out_card = {}
-            out_card['name'] = card.name
+            # for some reason ampersands aren't being escaped by
+            # the template and it's causing confluence to reject
+            # the page contnent, so manually convert to an entity
+            out_card['name'] = card.name.replace('&', '&amp;')
             members = card.member_ids
             out_card['assignees'] = []
             for member in members:
@@ -112,9 +124,20 @@ def main():
         sys.stderr.write('ERROR: %s' % (e.message))
         return 1
 
-    trello = TrelloClient(api_key=unicode(config['trello_key']), api_secret=unicode(config['trello_secret']),
-                          token=unicode(config['trello_token']), token_secret=unicode(['trello_token_secret']))
-    board = find_board(args.board, trello)
+    trello_auth = {
+        'api_key': unicode(args.trello_key or config['trello_key']),
+        'api_secret': unicode(args.trello_secret or config['trello_secret']),
+        'token': unicode(args.trello_token or config['trello_token']),
+        'token_secret': unicode(args.trello_token_secret or config['trello_token_secret'])
+    }
+    try:
+        trello = TrelloClient(**trello_auth)
+        boards = trello.list_boards()
+    except Unauthorized:
+        sys.stderr.write("Trello Authentication Failed\n")
+        return 1
+
+    board = find_board(args.board, boards)
     if not board:
         sys.stderr.write('Board not found\n')
         sys.stderr.write('Available boards with current credentials:\n')
@@ -142,7 +165,8 @@ def main():
     if page:
         page['content'] = page_content
     else:
-        page = {'title': args.title, 'space': args.space, 'content': page_content}
+        page = {'title': args.title,
+                'space': args.space, 'content': page_content}
         if parent_page_id:
             page['parentId'] = parent_page_id
     confluence.update_page(page)
