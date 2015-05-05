@@ -1,0 +1,24 @@
+<h3>Snapshot of <a href="{{ board['url'] }}">{{ board['name'] }}</a></h3>
+<table>
+  <tbody>
+    <tr>
+    {% for heading in board['data'][0] %}
+      <th>{{ heading }}</th>
+    {% endfor %}
+    </tr>
+    {% for row in board['data'][1:] %}
+      <tr>
+        {% for card in row %}
+          <td>{{ card['name'] }}
+          {% if card and 'assignees' in card and card['assignees'] | count > 0 %}
+            <br/><strong>Assigned To</strong>:
+            {% for assignee in card['assignees'] %}
+            &nbsp;&nbsp;{{ assignee }}<br/>
+            {% endfor %}
+          {% endif %}
+          </td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
