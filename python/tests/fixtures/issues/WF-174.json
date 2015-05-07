@@ -1,0 +1,807 @@
+{
+    "changelog": {
+        "total": 17,
+        "startAt": 0,
+        "histories": [
+            {
+                "items": [
+                    {
+                        "from": null,
+                        "to": "TF-143",
+                        "fromString": null,
+                        "field": "Link",
+                        "toString": "This issue blocks TF-143",
+                        "fieldtype": "jira"
+                    }
+                ],
+                "created": "2015-04-16T11:05:04.106-0700",
+                "id": "141193",
+                "author": {
+                    "displayName": "Telepahty Milkshake",
+                    "name": "tshake",
+                    "self": "https://example.atlassian.net/rest/api/2/user?username=tshake",
+                    "avatarUrls": {
+                        "24x24": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=24",
+                        "32x32": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=32",
+                        "48x48": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=48",
+                        "16x16": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=16"
+                    },
+                    "emailAddress": "tshake@example.com",
+                    "key": "tshake",
+                    "active": true,
+                    "timeZone": "America/Toronto"
+                }
+            },
+            {
+                "items": [
+                    {
+                        "from": null,
+                        "to": "stomperns",
+                        "fromString": null,
+                        "field": "assignee",
+                        "toString": "Semiconductor Stevens",
+                        "fieldtype": "jira"
+                    }
+                ],
+                "created": "2015-04-21T11:14:21.229-0700",
+                "id": "142247",
+                "author": {
+                    "displayName": "Semiconductor Stevens",
+                    "name": "stomperns",
+                    "self": "https://example.atlassian.net/rest/api/2/user?username=stomperns",
+                    "avatarUrls": {
+                        "24x24": "https://example.atlassian.net/secure/useravatar?size=small&ownerId=stomperns&avatarId=13185",
+                        "32x32": "https://example.atlassian.net/secure/useravatar?size=medium&ownerId=stomperns&avatarId=13185",
+                        "48x48": "https://example.atlassian.net/secure/useravatar?ownerId=stomperns&avatarId=13185",
+                        "16x16": "https://example.atlassian.net/secure/useravatar?size=xsmall&ownerId=stomperns&avatarId=13185"
+                    },
+                    "emailAddress": "stomperns@example.com",
+                    "key": "stomperns",
+                    "active": true,
+                    "timeZone": "America/Los_Angeles"
+                }
+            },
+            {
+                "items": [
+                    {
+                        "from": "10003",
+                        "to": "10606",
+                        "fromString": "To Do",
+                        "field": "status",
+                        "toString": "In Development",
+                        "fieldtype": "jira"
+                    }
+                ],
+                "created": "2015-04-21T11:14:25.604-0700",
+                "id": "142248",
+                "author": {
+                    "displayName": "Semiconductor Stevens",
+                    "name": "stomperns",
+                    "self": "https://example.atlassian.net/rest/api/2/user?username=stomperns",
+                    "avatarUrls": {
+                        "24x24": "https://example.atlassian.net/secure/useravatar?size=small&ownerId=stomperns&avatarId=13185",
+                        "32x32": "https://example.atlassian.net/secure/useravatar?size=medium&ownerId=stomperns&avatarId=13185",
+                        "48x48": "https://example.atlassian.net/secure/useravatar?ownerId=stomperns&avatarId=13185",
+                        "16x16": "https://example.atlassian.net/secure/useravatar?size=xsmall&ownerId=stomperns&avatarId=13185"
+                    },
+                    "emailAddress": "stomperns@example.com",
+                    "key": "stomperns",
+                    "active": true,
+                    "timeZone": "America/Los_Angeles"
+                }
+            },
+            {
+                "items": [
+                    {
+                        "from": "10606",
+                        "to": "10205",
+                        "fromString": "In Development",
+                        "field": "status",
+                        "toString": "In Code Review",
+                        "fieldtype": "jira"
+                    }
+                ],
+                "created": "2015-04-21T15:24:45.355-0700",
+                "id": "142403",
+                "author": {
+                    "displayName": "Semiconductor Stevens",
+                    "name": "stomperns",
+                    "self": "https://example.atlassian.net/rest/api/2/user?username=stomperns",
+                    "avatarUrls": {
+                        "24x24": "https://example.atlassian.net/secure/useravatar?size=small&ownerId=stomperns&avatarId=13185",
+                        "32x32": "https://example.atlassian.net/secure/useravatar?size=medium&ownerId=stomperns&avatarId=13185",
+                        "48x48": "https://example.atlassian.net/secure/useravatar?ownerId=stomperns&avatarId=13185",
+                        "16x16": "https://example.atlassian.net/secure/useravatar?size=xsmall&ownerId=stomperns&avatarId=13185"
+                    },
+                    "emailAddress": "stomperns@example.com",
+                    "key": "stomperns",
+                    "active": true,
+                    "timeZone": "America/Los_Angeles"
+                }
+            },
+            {
+                "items": [
+                    {
+                        "from": null,
+                        "to": "420",
+                        "fromString": null,
+                        "field": "Sprint",
+                        "toString": "Sprint 6",
+                        "fieldtype": "custom"
+                    }
+                ],
+                "created": "2015-04-22T12:54:36.016-0700",
+                "id": "142685",
+                "author": {
+                    "displayName": "Captain Canuck",
+                    "name": "ccanuck",
+                    "self": "https://example.atlassian.net/rest/api/2/user?username=ccanuck",
+                    "avatarUrls": {
+                        "24x24": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=24",
+                        "32x32": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=32",
+                        "48x48": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=48",
+                        "16x16": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=16"
+                    },
+                    "emailAddress": "ccanuck@example.com",
+                    "key": "ccanuck",
+                    "active": true,
+                    "timeZone": "America/Los_Angeles"
+                }
+            },
+            {
+                "items": [
+                    {
+                        "from": "",
+                        "to": "",
+                        "fromString": "",
+                        "field": "Rank",
+                        "toString": "Ranked higher",
+                        "fieldtype": "custom"
+                    }
+                ],
+                "created": "2015-04-22T12:54:36.222-0700",
+                "id": "142686",
+                "author": {
+                    "displayName": "Captain Canuck",
+                    "name": "ccanuck",
+                    "self": "https://example.atlassian.net/rest/api/2/user?username=ccanuck",
+                    "avatarUrls": {
+                        "24x24": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=24",
+                        "32x32": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=32",
+                        "48x48": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=48",
+                        "16x16": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=16"
+                    },
+                    "emailAddress": "ccanuck@example.com",
+                    "key": "ccanuck",
+                    "active": true,
+                    "timeZone": "America/Los_Angeles"
+                }
+            },
+            {
+                "items": [
+                    {
+                        "from": "1",
+                        "to": "6",
+                        "fromString": "Fixed",
+                        "field": "resolution",
+                        "toString": "Done",
+                        "fieldtype": "jira"
+                    },
+                    {
+                        "from": "10205",
+                        "to": "10002",
+                        "fromString": "In Code Review",
+                        "field": "status",
+                        "toString": "Done",
+                        "fieldtype": "jira"
+                    }
+                ],
+                "created": "2015-04-22T14:54:00.850-0700",
+                "id": "142756",
+                "author": {
+                    "displayName": "Semiconductor Stevens",
+                    "name": "stomperns",
+                    "self": "https://example.atlassian.net/rest/api/2/user?username=stomperns",
+                    "avatarUrls": {
+                        "24x24": "https://example.atlassian.net/secure/useravatar?size=small&ownerId=stomperns&avatarId=13185",
+                        "32x32": "https://example.atlassian.net/secure/useravatar?size=medium&ownerId=stomperns&avatarId=13185",
+                        "48x48": "https://example.atlassian.net/secure/useravatar?ownerId=stomperns&avatarId=13185",
+                        "16x16": "https://example.atlassian.net/secure/useravatar?size=xsmall&ownerId=stomperns&avatarId=13185"
+                    },
+                    "emailAddress": "stomperns@example.com",
+                    "key": "stomperns",
+                    "active": true,
+                    "timeZone": "America/Los_Angeles"
+                }
+            },
+            {
+                "items": [
+                    {
+                        "from": "6",
+                        "to": null,
+                        "fromString": "Done",
+                        "field": "resolution",
+                        "toString": null,
+                        "fieldtype": "jira"
+                    },
+                    {
+                        "from": "10002",
+                        "to": "10003",
+                        "fromString": "Done",
+                        "field": "status",
+                        "toString": "To Do",
+                        "fieldtype": "jira"
+                    }
+                ],
+                "created": "2015-04-22T17:08:59.099-0700",
+                "id": "142816",
+                "author": {
+                    "displayName": "Semiconductor Stevens",
+                    "name": "stomperns",
+                    "self": "https://example.atlassian.net/rest/api/2/user?username=stomperns",
+                    "avatarUrls": {
+                        "24x24": "https://example.atlassian.net/secure/useravatar?size=small&ownerId=stomperns&avatarId=13185",
+                        "32x32": "https://example.atlassian.net/secure/useravatar?size=medium&ownerId=stomperns&avatarId=13185",
+                        "48x48": "https://example.atlassian.net/secure/useravatar?ownerId=stomperns&avatarId=13185",
+                        "16x16": "https://example.atlassian.net/secure/useravatar?size=xsmall&ownerId=stomperns&avatarId=13185"
+                    },
+                    "emailAddress": "stomperns@example.com",
+                    "key": "stomperns",
+                    "active": true,
+                    "timeZone": "America/Los_Angeles"
+                }
+            },
+            {
+                "items": [
+                    {
+                        "from": "10003",
+                        "to": "10606",
+                        "fromString": "To Do",
+                        "field": "status",
+                        "toString": "In Development",
+                        "fieldtype": "jira"
+                    }
+                ],
+                "created": "2015-04-22T17:09:01.740-0700",
+                "id": "142817",
+                "author": {
+                    "displayName": "Semiconductor Stevens",
+                    "name": "stomperns",
+                    "self": "https://example.atlassian.net/rest/api/2/user?username=stomperns",
+                    "avatarUrls": {
+                        "24x24": "https://example.atlassian.net/secure/useravatar?size=small&ownerId=stomperns&avatarId=13185",
+                        "32x32": "https://example.atlassian.net/secure/useravatar?size=medium&ownerId=stomperns&avatarId=13185",
+                        "48x48": "https://example.atlassian.net/secure/useravatar?ownerId=stomperns&avatarId=13185",
+                        "16x16": "https://example.atlassian.net/secure/useravatar?size=xsmall&ownerId=stomperns&avatarId=13185"
+                    },
+                    "emailAddress": "stomperns@example.com",
+                    "key": "stomperns",
+                    "active": true,
+                    "timeZone": "America/Los_Angeles"
+                }
+            },
+            {
+                "items": [
+                    {
+                        "from": "10606",
+                        "to": "10205",
+                        "fromString": "In Development",
+                        "field": "status",
+                        "toString": "In Code Review",
+                        "fieldtype": "jira"
+                    }
+                ],
+                "created": "2015-04-22T17:09:04.801-0700",
+                "id": "142818",
+                "author": {
+                    "displayName": "Semiconductor Stevens",
+                    "name": "stomperns",
+                    "self": "https://example.atlassian.net/rest/api/2/user?username=stomperns",
+                    "avatarUrls": {
+                        "24x24": "https://example.atlassian.net/secure/useravatar?size=small&ownerId=stomperns&avatarId=13185",
+                        "32x32": "https://example.atlassian.net/secure/useravatar?size=medium&ownerId=stomperns&avatarId=13185",
+                        "48x48": "https://example.atlassian.net/secure/useravatar?ownerId=stomperns&avatarId=13185",
+                        "16x16": "https://example.atlassian.net/secure/useravatar?size=xsmall&ownerId=stomperns&avatarId=13185"
+                    },
+                    "emailAddress": "stomperns@example.com",
+                    "key": "stomperns",
+                    "active": true,
+                    "timeZone": "America/Los_Angeles"
+                }
+            },
+            {
+                "items": [
+                    {
+                        "from": "420",
+                        "to": "379, 420",
+                        "fromString": "Sprint 6",
+                        "field": "Sprint",
+                        "toString": "TF-Ready, Sprint 6",
+                        "fieldtype": "custom"
+                    }
+                ],
+                "created": "2015-04-23T10:07:16.840-0700",
+                "id": "142980",
+                "author": {
+                    "displayName": "Captain Canuck",
+                    "name": "ccanuck",
+                    "self": "https://example.atlassian.net/rest/api/2/user?username=ccanuck",
+                    "avatarUrls": {
+                        "24x24": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=24",
+                        "32x32": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=32",
+                        "48x48": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=48",
+                        "16x16": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=16"
+                    },
+                    "emailAddress": "ccanuck@example.com",
+                    "key": "ccanuck",
+                    "active": true,
+                    "timeZone": "America/Los_Angeles"
+                }
+            },
+            {
+                "items": [
+                    {
+                        "from": "",
+                        "to": "",
+                        "fromString": "",
+                        "field": "Rank",
+                        "toString": "Ranked higher",
+                        "fieldtype": "custom"
+                    }
+                ],
+                "created": "2015-04-23T10:07:20.903-0700",
+                "id": "142992",
+                "author": {
+                    "displayName": "Captain Canuck",
+                    "name": "ccanuck",
+                    "self": "https://example.atlassian.net/rest/api/2/user?username=ccanuck",
+                    "avatarUrls": {
+                        "24x24": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=24",
+                        "32x32": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=32",
+                        "48x48": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=48",
+                        "16x16": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=16"
+                    },
+                    "emailAddress": "ccanuck@example.com",
+                    "key": "ccanuck",
+                    "active": true,
+                    "timeZone": "America/Los_Angeles"
+                }
+            },
+            {
+                "items": [
+                    {
+                        "from": "",
+                        "to": "",
+                        "fromString": "",
+                        "field": "Rank",
+                        "toString": "Ranked lower",
+                        "fieldtype": "custom"
+                    }
+                ],
+                "created": "2015-04-23T11:44:54.163-0700",
+                "id": "143141",
+                "author": {
+                    "displayName": "Argument Jones",
+                    "name": "ajones",
+                    "self": "https://example.atlassian.net/rest/api/2/user?username=ajones",
+                    "avatarUrls": {
+                        "24x24": "https://example.atlassian.net/secure/useravatar?size=small&ownerId=ajones&avatarId=12800",
+                        "32x32": "https://example.atlassian.net/secure/useravatar?size=medium&ownerId=ajones&avatarId=12800",
+                        "48x48": "https://example.atlassian.net/secure/useravatar?ownerId=ajones&avatarId=12800",
+                        "16x16": "https://example.atlassian.net/secure/useravatar?size=xsmall&ownerId=ajones&avatarId=12800"
+                    },
+                    "emailAddress": "ajones@example.com",
+                    "key": "ajones",
+                    "active": true,
+                    "timeZone": "America/New_York"
+                }
+            },
+            {
+                "items": [
+                    {
+                        "from": null,
+                        "to": null,
+                        "fromString": null,
+                        "field": "Story Points",
+                        "toString": "3",
+                        "fieldtype": "custom"
+                    }
+                ],
+                "created": "2015-04-23T11:46:10.961-0700",
+                "id": "143143",
+                "author": {
+                    "displayName": "Captain Canuck",
+                    "name": "ccanuck",
+                    "self": "https://example.atlassian.net/rest/api/2/user?username=ccanuck",
+                    "avatarUrls": {
+                        "24x24": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=24",
+                        "32x32": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=32",
+                        "48x48": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=48",
+                        "16x16": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=16"
+                    },
+                    "emailAddress": "ccanuck@example.com",
+                    "key": "ccanuck",
+                    "active": true,
+                    "timeZone": "America/Los_Angeles"
+                }
+            },
+            {
+                "items": [
+                    {
+                        "from": "379, 420",
+                        "to": "420, 427",
+                        "fromString": "TF-Ready, Sprint 6",
+                        "field": "Sprint",
+                        "toString": "Sprint 6, Sprint 7",
+                        "fieldtype": "custom"
+                    }
+                ],
+                "created": "2015-04-23T11:50:32.807-0700",
+                "id": "143158",
+                "author": {
+                    "displayName": "Captain Canuck",
+                    "name": "ccanuck",
+                    "self": "https://example.atlassian.net/rest/api/2/user?username=ccanuck",
+                    "avatarUrls": {
+                        "24x24": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=24",
+                        "32x32": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=32",
+                        "48x48": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=48",
+                        "16x16": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=16"
+                    },
+                    "emailAddress": "ccanuck@example.com",
+                    "key": "ccanuck",
+                    "active": true,
+                    "timeZone": "America/Los_Angeles"
+                }
+            },
+            {
+                "items": [
+                    {
+                        "from": "stomperns",
+                        "to": "tshake",
+                        "fromString": "Semiconductor Stevens",
+                        "field": "assignee",
+                        "toString": "Telepahty Milkshake",
+                        "fieldtype": "jira"
+                    }
+                ],
+                "created": "2015-04-28T11:25:18.140-0700",
+                "id": "144058",
+                "author": {
+                    "displayName": "Telepahty Milkshake",
+                    "name": "tshake",
+                    "self": "https://example.atlassian.net/rest/api/2/user?username=tshake",
+                    "avatarUrls": {
+                        "24x24": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=24",
+                        "32x32": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=32",
+                        "48x48": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=48",
+                        "16x16": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=16"
+                    },
+                    "emailAddress": "tshake@example.com",
+                    "key": "tshake",
+                    "active": true,
+                    "timeZone": "America/Toronto"
+                }
+            },
+            {
+                "items": [
+                    {
+                        "from": "10205",
+                        "to": "10002",
+                        "fromString": "In Code Review",
+                        "field": "status",
+                        "toString": "Done",
+                        "fieldtype": "jira"
+                    }
+                ],
+                "created": "2015-04-28T11:56:35.308-0700",
+                "id": "144108",
+                "author": {
+                    "displayName": "Telepahty Milkshake",
+                    "name": "tshake",
+                    "self": "https://example.atlassian.net/rest/api/2/user?username=tshake",
+                    "avatarUrls": {
+                        "24x24": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=24",
+                        "32x32": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=32",
+                        "48x48": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=48",
+                        "16x16": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=16"
+                    },
+                    "emailAddress": "tshake@example.com",
+                    "key": "tshake",
+                    "active": true,
+                    "timeZone": "America/Toronto"
+                }
+            }
+        ],
+        "maxResults": 17
+    },
+    "fields": {
+        "labels": [],
+        "customfield_11101": null,
+        "assignee": {
+            "displayName": "Telepahty Milkshake",
+            "name": "tshake",
+            "self": "https://example.atlassian.net/rest/api/2/user?username=tshake",
+            "avatarUrls": {
+                "24x24": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=24",
+                "32x32": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=32",
+                "48x48": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=48",
+                "16x16": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=16"
+            },
+            "emailAddress": "tshake@example.com",
+            "key": "tshake",
+            "active": true,
+            "timeZone": "America/Toronto"
+        },
+        "lastViewed": "2015-04-23T11:46:11.101-0700",
+        "customfield_10019": null,
+        "customfield_10018": null,
+        "customfield_10007": [
+            "com.atlassian.greenhopper.service.sprint.Sprint@397975[id=420,rapidViewId=95,state=CLOSED,name=Sprint 6,startDate=2015-04-09T12:00:51.447-07:00,endDate=2015-04-22T12:00:00.000-07:00,completeDate=2015-04-23T10:07:15.736-07:00,sequence=395]",
+            "com.atlassian.greenhopper.service.sprint.Sprint@38744b[id=427,rapidViewId=95,state=CLOSED,name=TF Sprint 7,startDate=2015-04-23T12:02:28.537-07:00,endDate=2015-05-07T12:02:00.000-07:00,completeDate=2015-05-06T18:39:45.686-07:00,sequence=408]"
+        ],
+        "customfield_10015": null,
+        "customfield_10014": null,
+        "customfield_10017": null,
+        "customfield_10016": null,
+        "customfield_10004": 3.0,
+        "customfield_10013": null,
+        "customfield_10012": null,
+        "votes": {
+            "hasVoted": false,
+            "self": "https://example.atlassian.net/rest/api/2/issue/TF-174/votes",
+            "votes": 0
+        },
+        "customfield_11000": null,
+        "customfield_12400": null,
+        "customfield_12401": null,
+        "customfield_12402": null,
+        "customfield_12403": null,
+        "timespent": null,
+        "customfield_12405": null,
+        "customfield_12406": null,
+        "duedate": null,
+        "updated": "2015-04-28T11:56:35.000-0700",
+        "subtasks": [],
+        "customfield_10801": null,
+        "customfield_10008": null,
+        "customfield_11702": null,
+        "customfield_11703": null,
+        "customfield_11700": null,
+        "customfield_11701": null,
+        "customfield_10002": null,
+        "customfield_10003": null,
+        "customfield_11704": null,
+        "customfield_10001": null,
+        "customfield_10301": null,
+        "customfield_10300": null,
+        "customfield_12101": null,
+        "customfield_12100": null,
+        "summary": "Lasr",
+        "issuetype": {
+            "name": "Story",
+            "self": "https://example.atlassian.net/rest/api/2/issuetype/10",
+            "iconUrl": "https://example.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10919&avatarType=issuetype",
+            "subtask": false,
+            "avatarId": 10919,
+            "id": "10",
+            "description": "Story"
+        },
+        "timeestimate": null,
+        "creator": {
+            "displayName": "Telepahty Milkshake",
+            "name": "tshake",
+            "self": "https://example.atlassian.net/rest/api/2/user?username=tshake",
+            "avatarUrls": {
+                "24x24": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=24",
+                "32x32": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=32",
+                "48x48": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=48",
+                "16x16": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=16"
+            },
+            "emailAddress": "tshake@example.com",
+            "key": "tshake",
+            "active": true,
+            "timeZone": "America/Toronto"
+        },
+        "customfield_11203": null,
+        "customfield_11202": null,
+        "issuelinks": [
+            {
+                "self": "https://example.atlassian.net/rest/api/2/issueLink/24344",
+                "outwardIssue": {
+                    "fields": {
+                        "status": {
+                            "statusCategory": {
+                                "id": 3,
+                                "self": "https://example.atlassian.net/rest/api/2/statuscategory/3",
+                                "colorName": "green",
+                                "key": "done",
+                                "name": "Done"
+                            },
+                            "description": "",
+                            "self": "https://example.atlassian.net/rest/api/2/status/10002",
+                            "iconUrl": "https://example.atlassian.net/images/icons/statuses/closed.png",
+                            "id": "10002",
+                            "name": "Done"
+                        },
+                        "priority": {
+                            "iconUrl": "https://example.atlassian.net/wiki/download/attachments/36438160/P3.png",
+                            "self": "https://example.atlassian.net/rest/api/2/priority/4",
+                            "name": "P3 - Minor / Nice to have",
+                            "id": "4"
+                        },
+                        "issuetype": {
+                            "name": "Story",
+                            "self": "https://example.atlassian.net/rest/api/2/issuetype/10",
+                            "iconUrl": "https://example.atlassian.net/secure/viewavatar?size=xsmall&avatarId=10919&avatarType=issuetype",
+                            "subtask": false,
+                            "avatarId": 10919,
+                            "id": "10",
+                            "description": "Story"
+                        },
+                        "summary": "Add time-to-escalation and time-to-alert (dinner) to the API"
+                    },
+                    "self": "https://example.atlassian.net/rest/api/2/issue/30430",
+                    "id": "30430",
+                    "key": "TF-143"
+                },
+                "type": {
+                    "id": "10000",
+                    "inward": "is blocked by",
+                    "self": "https://example.atlassian.net/rest/api/2/issueLinkType/10000",
+                    "outward": "blocks",
+                    "name": "Blocks"
+                },
+                "id": "24344"
+            }
+        ],
+        "customfield_11200": "1|hzxz3v:zp",
+        "customfield_12501": null,
+        "customfield_12500": null,
+        "customfield_12503": {
+            "self": "https://example.atlassian.net/rest/api/2/customFieldOption/11259",
+            "id": "11259",
+            "value": "New Vendor"
+        },
+        "customfield_12502": null,
+        "customfield_12505": null,
+        "customfield_12504": null,
+        "customfield_11300": null,
+        "progress": {
+            "progress": 0,
+            "total": 0
+        },
+        "aggregateprogress": {
+            "progress": 0,
+            "total": 0
+        },
+        "customfield_12201": null,
+        "customfield_11600": null,
+        "customfield_12600": null,
+        "created": "2015-04-16T11:05:04.000-0700",
+        "customfield_10006": "9223372036854775807",
+        "aggregatetimespent": null,
+        "customfield_10902": null,
+        "customfield_10900": null,
+        "customfield_11514": null,
+        "customfield_11513": null,
+        "customfield_11512": null,
+        "customfield_11510": null,
+        "aggregatetimeestimate": null,
+        "customfield_10500": null,
+        "environment": null,
+        "customfield_10020": null,
+        "customfield_10021": "Not Started",
+        "priority": {
+            "iconUrl": "https://example.atlassian.net/wiki/download/attachments/36438160/P3.png",
+            "self": "https://example.atlassian.net/rest/api/2/priority/4",
+            "name": "P3 - Minor / Nice to have",
+            "id": "4"
+        },
+        "customfield_11900": null,
+        "customfield_11902": null,
+        "customfield_11903": null,
+        "customfield_12404": null,
+        "customfield_11508": null,
+        "customfield_11509": null,
+        "customfield_11500": null,
+        "customfield_11501": null,
+        "customfield_11502": null,
+        "customfield_11503": null,
+        "customfield_11504": null,
+        "customfield_11505": null,
+        "customfield_11506": null,
+        "customfield_11507": null,
+        "reporter": {
+            "displayName": "Telepahty Milkshake",
+            "name": "tshake",
+            "self": "https://example.atlassian.net/rest/api/2/user?username=tshake",
+            "avatarUrls": {
+                "24x24": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=24",
+                "32x32": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=32",
+                "48x48": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=48",
+                "16x16": "https://secure.gravatar.com/avatar/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?d=mm&s=16"
+            },
+            "emailAddress": "tshake@example.com",
+            "key": "tshake",
+            "active": true,
+            "timeZone": "America/Toronto"
+        },
+        "versions": [],
+        "customfield_11110": null,
+        "resolutiondate": "2015-04-28T11:56:35.000-0700",
+        "project": {
+            "name": "WorkFlow",
+            "self": "https://example.atlassian.net/rest/api/2/project/13202",
+            "avatarUrls": {
+                "24x24": "https://example.atlassian.net/secure/projectavatar?size=small&pid=13202&avatarId=12703",
+                "32x32": "https://example.atlassian.net/secure/projectavatar?size=medium&pid=13202&avatarId=12703",
+                "48x48": "https://example.atlassian.net/secure/projectavatar?pid=13202&avatarId=12703",
+                "16x16": "https://example.atlassian.net/secure/projectavatar?size=xsmall&pid=13202&avatarId=12703"
+            },
+            "projectCategory": {
+                "self": "https://example.atlassian.net/rest/api/2/projectCategory/10201",
+                "description": "",
+                "name": "Cross-team",
+                "id": "10201"
+            },
+            "key": "TF",
+            "id": "13202"
+        },
+        "workratio": -1,
+        "customfield_11201": null,
+        "customfield_10600": null,
+        "watches": {
+            "self": "https://example.atlassian.net/rest/api/2/issue/TF-174/watchers",
+            "watchCount": 1,
+            "isWatching": false
+        },
+        "customfield_10000": "10205_*:*_2_*:*_84555495_*|*_10606_*:*_2_*:*_15022812_*|*_10002_*:*_1_*:*_8098249_*|*_10003_*:*_2_*:*_432564177",
+        "aggregatetimeoriginalestimate": null,
+        "customfield_11108": null,
+        "customfield_11109": null,
+        "customfield_11805": null,
+        "customfield_11105": null,
+        "customfield_11807": null,
+        "customfield_11107": null,
+        "customfield_11100": null,
+        "fixVersions": [],
+        "customfield_11803": null,
+        "customfield_11802": "The Finance team will advise you when to bring in a check with the correct amount. You will receive the paper via DocuSign and will be able to download a copy when it is fully executed.",
+        "customfield_12700": null,
+        "status": {
+            "statusCategory": {
+                "id": 3,
+                "self": "https://example.atlassian.net/rest/api/2/statuscategory/3",
+                "colorName": "green",
+                "key": "done",
+                "name": "Done"
+            },
+            "description": "",
+            "self": "https://example.atlassian.net/rest/api/2/status/10002",
+            "iconUrl": "https://example.atlassian.net/images/icons/statuses/closed.png",
+            "id": "10002",
+            "name": "Done"
+        },
+        "customfield_11400": null,
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Si longus, levis dictata sunt. Immo videri fortasse. Graccho, eius fere, aequal\u00ed? Illi enim inter se dissentiunt. Nihil sane. Duo Reges: constructio interrete. Is es profecto tu. \n\nCur post Tarentum ad Archytam? Sed quae tandem ista ratio est? \n\n",
+        "customfield_11102": null,
+        "timeoriginalestimate": null,
+        "customfield_11103": null,
+        "customfield_10200": null,
+        "customfield_10201": null,
+        "components": [],
+        "customfield_11804": null,
+        "resolution": {
+            "self": "https://example.atlassian.net/rest/api/2/resolution/6",
+            "description": "",
+            "name": "Done",
+            "id": "6"
+        },
+        "customfield_11106": null
+    },
+    "self": "https://example.atlassian.net/rest/api/2/issue/31284",
+    "key": "TF-174",
+    "id": "31284",
+    "expand": "operations,versionedRepresentations,editmeta,changelog,transitions,renderedFields"
+}

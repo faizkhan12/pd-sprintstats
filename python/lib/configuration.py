@@ -15,23 +15,19 @@
 from ConfigParser import SafeConfigParser
 import os
 
-
-def parse_config(args):
-    settings = {}
-    parser = SafeConfigParser()
-    config_precedence = [
-        '/etc/sprintstats.cfg',
-        '/usr/local/etc/sprintstats.cfg',
-        '~/.sprintstats.cfg',
-        'config.cfg'
-    ]
+def find_config(file_list):
     config_file = None
 
-    for f in config_precedence:
+    for f in file_list:
         f = os.path.expanduser(f)
         if os.path.exists(f):
             config_file = f
+    return config_file
 
+def parse_config(args, file_list):
+    settings = {}
+    parser = SafeConfigParser()
+    config_file = find_config(file_list)
     if args and args.config:
         if os.path.exists(args.config):
             config_file = args.config
@@ -44,8 +40,9 @@ def parse_config(args):
 
     if config_file and os.path.exists(config_file):
         parser.read(config_file)
+        settings = dict(parser.items('DEFAULT'))
         if parser.has_section('default'):
-            settings = dict(parser.items('default'))
+            settings.update(dict(parser.items('default')))
     if 'default_points' not in settings:
         settings['default_points'] = 0
     return settings

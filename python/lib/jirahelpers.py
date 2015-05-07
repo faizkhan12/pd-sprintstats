@@ -37,8 +37,12 @@ def find_sprint(sprint_name, board, greenhopper):
 
 def find_project(project_name_or_key, jira):
     projects = [p for p in jira.projects()
-                if p.name == project_name_or_key
-                or p.key == project_name_or_key]
+                if p.key == project_name_or_key]
+
+    if not len(projects):
+        projects = [p for p in jira.projects()
+                if p.name == project_name_or_key]
+
     if len(projects):
         return projects[0]
     return None
