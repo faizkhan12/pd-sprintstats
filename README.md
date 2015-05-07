@@ -32,6 +32,9 @@ The script will look for the config file in the following locations (if found, t
 
 Alternatively, you can specify the credentials on the command line. See the help-text.
 
+### Installation
+Run `sudo -H pip install pd-sprintstats`
+
 ###Run your sprint stats
 Once you've got your credentials set up, you can process some stats!
 
