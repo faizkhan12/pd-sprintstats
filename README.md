@@ -7,6 +7,8 @@ This is a python script you can run after a completed sprint to gather some stat
 ## Contributing
 Feel free to fork the repository and submit any useful changes back as via a pull request.
 
+## Installation
+Run `sudo -H pip install pd-sprintstats`
 
 ## Usage
 
@@ -31,9 +33,6 @@ The script will look for the config file in the following locations (if found, t
 * `/etc/sprintstats.cfg`
 
 Alternatively, you can specify the credentials on the command line. See the help-text.
-
-### Installation
-Run `sudo -H pip install pd-sprintstats`
 
 ###Run your sprint stats
 Once you've got your credentials set up, you can process some stats!
