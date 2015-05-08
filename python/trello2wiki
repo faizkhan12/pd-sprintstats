@@ -100,9 +100,8 @@ def main():
     args = parse_arguments()
     config = parse_config(args)
 
-    user = args.user or (
-        'user' in config and config['user']) or getpass.getuser()
-    password = args.password or ('password' in config and config['password']) or (
+    user = args.user or config.get('user') or getpass.getuser()
+    password = args.password or config.get('password') or (
         args.prompt and getpass.getpass())
 
     if not user or not password:
@@ -110,16 +109,12 @@ def main():
         return 1
 
     options = {
-        'server': args.server or config['server'] or 'https://confluence.atlassian.com'
+        'server': args.server or config.get('server') or 'https://confluence.atlassian.com'
     }
 
     try:
         confluence = Confluence(
             options['server'] + 'wiki/rpc/xmlrpc', user, password)
-        scratch = confluence.get_page('~jdiller', 'Scratch Page')
-        f = open('/tmp/template.html', 'w')
-        f.write(scratch['content'])
-        f.close()
     except Exception as e:
         sys.stderr.write('ERROR: %s' % (e.message))
         return 1

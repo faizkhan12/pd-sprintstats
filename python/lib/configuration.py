@@ -26,7 +26,9 @@ def parse_config(args):
         'config.cfg'
     ]
     config_file = None
+
     for f in config_precedence:
+        f = os.path.expanduser(f)
         if os.path.exists(f):
             config_file = f
 
@@ -41,7 +43,7 @@ def parse_config(args):
                     'Using {0} instead.'.format(os.path.abspath(config_file)))
 
     if config_file and os.path.exists(config_file):
-        parser.read('config.cfg')
+        parser.read(config_file)
         if parser.has_section('default'):
             settings = dict(parser.items('default'))
     if 'default_points' not in settings:
