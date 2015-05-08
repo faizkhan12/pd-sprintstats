@@ -193,9 +193,8 @@ def main():
         print('Either --list-boards or a board and sprint must be specified')
         return 1
 
-    user = args.user or (
-        'user' in config and config['user']) or getpass.getuser()
-    password = args.password or ('password' in config and config['password']) or (
+    user = args.user or  config.get('user') or getpass.getuser()
+    password = args.password or config.get('password') or (
         args.prompt and getpass.getpass())
 
     if not user or not password:
@@ -204,7 +203,7 @@ def main():
 
     auth = (user, password)
     options = {
-        'server': args.server or config['server'] or 'https://jira.atlassian.com'
+        'server': args.server or config.get('server') or 'https://jira.atlassian.com'
     }
 
     try:
@@ -241,11 +240,12 @@ def main():
                 args.board, sprint.id)
             incompleted_issues = jra.search_issues('key in ({0})'.format(','.join(
                 [issue.key for issue in incompleted_issues])), maxResults=-1, expand='changelog')
+            default_points = int(config['default_points']) if 'default_points' in config else None
             stats = gather_sprint_stats(
-                completed_issues, incompleted_issues, jira=jra, default_points=int(config['default_points']))
+                completed_issues, incompleted_issues, jira=jra, default_points=default_points)
             stats['sprint_id'] = sprint.id
             backlog_stats = gather_backlog_stats(
-                project, jra, default_points=int(config['default_points']))
+                project, jra, default_points=default_points)
             if args.json:
                 output = {}
                 output['incomplete_issues'] = issues_as_list(
