@@ -115,10 +115,6 @@ def main():
     try:
         confluence = Confluence(
             options['server'] + 'wiki/rpc/xmlrpc', user, password)
-        scratch = confluence.get_page('~jdiller', 'Scratch Page')
-        f = open('/tmp/template.html', 'w')
-        f.write(scratch['content'])
-        f.close()
     except Exception as e:
         sys.stderr.write('ERROR: %s' % (e.message))
         return 1
