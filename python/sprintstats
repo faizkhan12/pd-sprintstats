@@ -149,8 +149,11 @@ def gather_backlog_stats(project, jira, default_points=0):
         i for i in incomplete_issues if i.fields.issuetype.name == 'Story']
     points = [getattr(issue.fields, story_point_field['id'])
               for issue in stories]
-    total_points = reduce(
-        lambda x, y: x + y, [p for p in points if p is not None] + [default_points for p in points if p is None])
+    if points and len(points):
+        total_points = reduce(
+            lambda x, y: x + y, [p for p in points if p is not None] + [default_points for p in points if p is None])
+    else:
+        total_points = 0
     ages = []
     for issue in incomplete_issues:
         dot()
