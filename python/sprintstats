@@ -143,7 +143,7 @@ def gather_sprint_stats(completed_issues, incompleted_issues, jira, default_poin
 
 def gather_backlog_stats(project, jira, default_points=0):
     incomplete_issues = jira.search_issues(
-        'project={0} AND status != Done and type != Sub-task and type != Epic'.format(project.key), maxResults=-1, expand='changelog')
+        'project="{0}" AND status != Done and type != Sub-task and type != Epic'.format(project.key), maxResults=-1, expand='changelog')
     story_point_field = find_custom_field('Story Points', jira)
     stories = [
         i for i in incomplete_issues if i.fields.issuetype.name == 'Story']
