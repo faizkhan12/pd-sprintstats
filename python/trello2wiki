@@ -105,7 +105,7 @@ def main():
         args.prompt and getpass.getpass())
 
     if not user or not password:
-        sys.stderr.write('Username and password are required')
+        sys.stderr.write('Confluence username and password are required')
         return 1
 
     options = {
